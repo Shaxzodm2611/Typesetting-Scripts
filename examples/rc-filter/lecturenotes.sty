@@ -11,6 +11,7 @@
 \RequirePackage{circuitikz}
 \RequirePackage{pgfplots}
 \RequirePackage{xparse}
+\RequirePackage{needspace}
 \pgfplotsset{compat=1.18}
 
 \definecolor{NoteAccent}{HTML}{286B70}
@@ -27,6 +28,14 @@
 \newcommand{\lectureheader}[2]{%
   \fancyhead[L]{\sffamily\bfseries\color{NoteAccent}#1}%
   \fancyhead[R]{\sffamily\color{NoteMuted}Lecture #2}}
+
+% Optional topic dividers. New lectures still start without any sections.
+\NewDocumentCommand{\notesection}{m}{%
+  \par\addvspace{12pt}\Needspace{5\baselineskip}%
+  {\large\sffamily\bfseries\color{NoteAccent}#1\par}%
+  \nobreak\vspace{2pt}%
+  {\color{NoteAccent!45}\hrule height 0.4pt}%
+  \nobreak\vspace{5pt}\noindent\ignorespaces}
 
 \tcbset{noteblock/.style={enhanced,breakable,colback=NoteTint,
   colframe=NoteAccent,boxrule=0pt,leftrule=1.5pt,arc=0pt,

@@ -3,7 +3,8 @@
 \lectureheader{ECE342}{2}
 
 \begin{document}
-{\large\sffamily\bfseries RC low-pass filter}\par
+% ==================== Topic 1: frequency domain ====================
+\notesection{RC low-pass filter: frequency domain}
 A resistor and capacitor smooth a changing input. Take the output across
 the capacitor: slow changes pass through, while fast changes are attenuated.
 
@@ -30,6 +31,8 @@ $f_c$ & Half-power cutoff frequency & $1.59\,\mathrm{kHz}$ \\
   \draw (3,2) to[C,l=$C$,*-] (3,0) node[ground]{};
 \end{notecircuit}
 
+% ====================== Topic 2: time domain =======================
+\notesection{Step response: time domain}
 \keyequation{Response to a step of amplitude $V_0$}{
   v_{\mathrm{out}}(t)=V_0\!\left(1-e^{-t/\tau}\right),\qquad t\geq 0
 }

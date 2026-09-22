@@ -62,6 +62,8 @@ The public authoring interface is:
 \usepackage{lecturenotes}
 \lectureheader{ECE342}{2}
 
+\notesection{Frequency response}
+
 \keyequation{Ohm's law}{V = IR}
 
 \assumption{The op-amp is ideal.}
@@ -80,7 +82,7 @@ Current & $I$ & amperes \\
 \end{notesignal}
 ```
 
-Equation titles and assumptions use the same accent treatment. Tables receive consistent column padding and header styling without requiring the author to draw rules manually. Circuit wrappers create a centered CircuitikZ environment. Signal wrappers create a centered TikZ picture and PGFPlots axis with shared defaults; user options override those defaults. For ChatGPT-generated diagrams, document exactly which inner commands belong in a wrapper and show how to use a complete standalone TikZ picture directly without nesting incompatible environments.
+Optional topic dividers use an unnumbered accent heading and a thin matching rule. The source example separates topics with comment dividers as well. Generated lectures remain blank until the author inserts these headings. Equation titles and assumptions use the same accent treatment. Tables receive consistent column padding and header styling without requiring the author to draw rules manually. Circuit wrappers create a centered CircuitikZ environment. Signal wrappers create a centered TikZ picture and PGFPlots axis with shared defaults; user options override those defaults. For ChatGPT-generated diagrams, document exactly which inner commands belong in a wrapper and show how to use a complete standalone TikZ picture directly without nesting incompatible environments.
 
 Circuit and signal content remains user supplied. The tool does not call ChatGPT, interpret images, or generate diagrams. Include a short copyable prompt in the documentation for requesting compatible drawing code from an image.
 

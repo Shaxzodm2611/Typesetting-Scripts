@@ -32,7 +32,7 @@ latexmk --version
 
 The package uses `fontenc`, `lmodern`, `geometry`, `amsmath`, `amssymb`, `xcolor`,
 `booktabs`, `tabularx`, `fancyhdr`, `tcolorbox`, `circuitikz`, `pgfplots`, and
-`xparse`. A minimal TeX installation may need additional packages. No shell
+`xparse`, and `needspace`. A minimal TeX installation may need additional packages. No shell
 escape or external image-conversion program is needed for this sample.
 
 ### 2. Set up VS Code
@@ -85,6 +85,24 @@ or prefilled section structure.
 All blocks use the same muted teal accent, dark text, and subtle backgrounds.
 Change `NoteAccent`, `NoteTint`, `NoteInk`, and `NoteMuted` in the local `.sty`
 file to adjust the palette.
+
+### Topic divider
+
+Use one divider for each topic or subtopic covered in a lecture. It creates an
+unnumbered teal heading and a thin matching rule, with space reserved for the
+content that follows. The sample demonstrates two topics and uses matching
+comment dividers to make its source easy to scan. Blank lectures do not include
+any topic headings until you add them.
+
+```latex
+% ==================== Topic: frequency response ====================
+\notesection{Frequency response}
+% Equations, explanations, tables, or diagrams go here.
+
+% ====================== Topic: step response =======================
+\notesection{Step response}
+% Next topic's notes go here.
+```
 
 ### Key equation
 
