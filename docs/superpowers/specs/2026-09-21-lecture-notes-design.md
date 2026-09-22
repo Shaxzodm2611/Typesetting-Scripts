@@ -52,7 +52,7 @@ Provide `notes --help`, command-specific help, and `notes --version`. Explain in
 
 ## LaTeX package
 
-`lecturenotes.sty` owns the shared page layout, header, palette, spacing, and reusable commands. Proposed defaults are A4 paper, 22 mm margins, 11 pt body text, and a muted teal accent with a very pale matching background. Keep text dark and avoid heavy frames. Paper size can be changed in the document class without changing the tool.
+`lecturenotes.sty` owns the shared page layout, header, palette, spacing, and reusable commands. Defaults are A4 paper, 22 mm margins, 11 pt body text, and the user's chosen modern-textbook style: Palatino body text and mathematics, sans-serif headings, dark ink, and muted teal accents. Reserve a pale teal background for key equations. Definitions use a slim accent rule, assumptions are inline and muted, derivations remain on white, and code has a pale neutral background. Tables use fine horizontal rules without header shading. Use TeX-distributed fonts, requiring no operating-system font installation. Paper size can be changed in the document class without changing the tool.
 
 Use established LaTeX packages for mathematics, tables, boxes, headers, CircuitikZ, and PGFPlots. Aim for pdfLaTeX compatibility, with no shell escape, external plotting tools, or custom fonts required. Document the required TeX packages and a working VS Code/LaTeX Workshop setup for both operating systems.
 
@@ -82,7 +82,7 @@ Current & $I$ & amperes \\
 \end{notesignal}
 ```
 
-Optional topic dividers use an unnumbered accent heading and a thin matching rule. The source example separates topics with comment dividers as well. Generated lectures remain blank until the author inserts these headings. Equation titles and assumptions use the same accent treatment. Tables receive consistent column padding and header styling without requiring the author to draw rules manually. Circuit wrappers create a centered CircuitikZ environment. Signal wrappers create a centered TikZ picture and PGFPlots axis with shared defaults; user options override those defaults. For ChatGPT-generated diagrams, document exactly which inner commands belong in a wrapper and show how to use a complete standalone TikZ picture directly without nesting incompatible environments.
+Optional topic dividers use an unnumbered dark heading and a short teal rule. The source example separates topics with comment dividers as well. Generated lectures remain blank until the author inserts these headings. Equation titles and assumption labels share the accent color, while their containers differ by purpose. Tables receive consistent column padding and rules without requiring the author to draw rules manually. Circuit wrappers create a centered CircuitikZ environment. Signal wrappers create a centered TikZ picture and PGFPlots axis with shared defaults; user options override those defaults. For ChatGPT-generated diagrams, document exactly which inner commands belong in a wrapper and show how to use a complete standalone TikZ picture directly without nesting incompatible environments.
 
 Circuit and signal content remains user supplied. The tool does not call ChatGPT, interpret images, or generate diagrams. Include a short copyable prompt in the documentation for requesting compatible drawing code from an image.
 

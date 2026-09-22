@@ -4,6 +4,9 @@
 \RequirePackage{lmodern}
 \RequirePackage[margin=22mm,includehead,headheight=24pt,headsep=8mm]{geometry}
 \RequirePackage{amsmath,amssymb}
+\RequirePackage{mathpazo}
+\RequirePackage[scaled=0.92]{helvet}
+\RequirePackage{microtype}
 \RequirePackage[table]{xcolor}
 \RequirePackage{booktabs,tabularx}
 \RequirePackage{fancyhdr}
@@ -15,58 +18,66 @@
 \RequirePackage{listings}
 \pgfplotsset{compat=1.18}
 
-\definecolor{NoteAccent}{HTML}{286B70}
-\definecolor{NoteTint}{HTML}{EFF6F5}
-\definecolor{NoteInk}{HTML}{243436}
-\definecolor{NoteMuted}{HTML}{596D70}
+\definecolor{NoteAccent}{HTML}{246A70}
+\definecolor{NoteTint}{HTML}{F0F6F5}
+\definecolor{NoteInk}{HTML}{243039}
+\definecolor{NoteMuted}{HTML}{627078}
+\definecolor{NoteRule}{HTML}{D3DFE0}
+\definecolor{NoteCode}{HTML}{F5F7F8}
 \color{NoteInk}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{5pt}
 \pagestyle{fancy}
 \fancyhf{}
-\renewcommand{\headrulewidth}{0.5pt}
-\renewcommand{\headrule}{\hbox to\headwidth{\color{NoteAccent}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{NoteRule}\leaders\hrule height \headrulewidth\hfill}}
 \newcommand{\lectureheader}[2]{%
-  \fancyhead[L]{\sffamily\bfseries\color{NoteAccent}#1}%
-  \fancyhead[R]{\sffamily\color{NoteMuted}Lecture #2}}
+  \fancyhead[L]{\small\sffamily\bfseries\color{NoteAccent}\textls[80]{#1}}%
+  \fancyhead[R]{\small\sffamily\color{NoteMuted}Lecture #2}}
 
 % Optional topic dividers. New lectures still start without any sections.
 \NewDocumentCommand{\notesection}{m}{%
-  \par\addvspace{12pt}\Needspace{5\baselineskip}%
-  {\large\sffamily\bfseries\color{NoteAccent}#1\par}%
-  \nobreak\vspace{2pt}%
-  {\color{NoteAccent!45}\hrule height 0.4pt}%
-  \nobreak\vspace{5pt}\noindent\ignorespaces}
+  \par\addvspace{15pt}\Needspace{5\baselineskip}%
+  {\fontsize{14}{17}\selectfont\sffamily\bfseries\color{NoteInk}#1\par}%
+  \nobreak\vspace{3pt}%
+  {\color{NoteAccent}\hrule width 18mm height 1.2pt}%
+  \nobreak\vspace{7pt}\noindent\ignorespaces}
 
 \tcbset{noteblock/.style={enhanced,breakable,colback=NoteTint,
   colframe=NoteAccent,boxrule=0pt,leftrule=1.5pt,arc=0pt,
-  left=10pt,right=10pt,top=6pt,bottom=6pt,
+  left=12pt,right=12pt,top=8pt,bottom=8pt,
   before skip=9pt,after skip=9pt}}
 \NewDocumentCommand{\keyequation}{m m}{%
   \begin{tcolorbox}[noteblock]
     {\sffamily\bfseries\small\color{NoteAccent}#1}\par
-    \vspace{-5pt}\begin{equation*}#2\end{equation*}\vspace{-9pt}
+    \setlength{\abovedisplayskip}{5pt}%
+    \setlength{\belowdisplayskip}{0pt}%
+    \begin{equation*}#2\end{equation*}
   \end{tcolorbox}}
 \NewDocumentCommand{\assumption}{+m}{%
-  \begin{tcolorbox}[noteblock]
-    {\sffamily\bfseries\small\color{NoteAccent}Assumption}\quad #1
-  \end{tcolorbox}}
+  \par\addvspace{6pt}\begingroup\small\color{NoteMuted}%
+    {\sffamily\bfseries\color{NoteAccent}Assumption}\enspace #1\par
+  \endgroup\addvspace{6pt}}
 \NewDocumentCommand{\notedefinition}{m +m}{%
-  \begin{tcolorbox}[noteblock]
-    {\sffamily\bfseries\small\color{NoteAccent}Definition: #1}\par
+  \begin{tcolorbox}[noteblock,colback=white,leftrule=0.8pt,top=3pt,bottom=3pt]
+    {\sffamily\scriptsize\bfseries\color{NoteAccent}\textls[90]{DEFINITION}}\quad
+    {\bfseries #1}\par
     #2
   \end{tcolorbox}}
 \NewDocumentEnvironment{notederivation}{m +b}{%
-  \begin{tcolorbox}[noteblock]
-    {\sffamily\bfseries\small\color{NoteAccent}#1}\par
+  \par\addvspace{9pt}\Needspace{6\baselineskip}\begingroup
+    {\sffamily\bfseries\small\color{NoteMuted}#1}\par\nobreak
+    \setlength{\abovedisplayskip}{5pt}%
+    \setlength{\belowdisplayskip}{5pt}%
+    \setlength{\jot}{5pt}%
     \begin{align*}#2\end{align*}
-  \end{tcolorbox}}{}
+  \endgroup\par\addvspace{6pt}}{}
 \NewDocumentEnvironment{notetable}{m m +b}{%
   \par\addvspace{7pt}\begingroup
-  \renewcommand{\arraystretch}{1.25}\setlength{\tabcolsep}{9pt}
+  \renewcommand{\arraystretch}{1.28}\setlength{\tabcolsep}{9pt}
   \noindent\begin{tabularx}{\linewidth}{#1}
-    \rowcolor{NoteTint}#2\\
-    \arrayrulecolor{NoteAccent}\midrule
+    #2\\
+    \arrayrulecolor{NoteRule}\midrule
     #3
     \bottomrule
   \end{tabularx}\endgroup\par\addvspace{7pt}}{}
@@ -87,10 +98,10 @@
   keywordstyle=\bfseries\color{NoteAccent},
   commentstyle=\itshape\color{NoteMuted},
   stringstyle=\color{NoteAccent},
-  backgroundcolor=\color{NoteTint},
-  frame=l,rulecolor=\color{NoteAccent},framerule=1.5pt,
-  framesep=8pt,xleftmargin=10pt,xrightmargin=8pt,
-  aboveskip=10pt,belowskip=10pt,
+  backgroundcolor=\color{NoteCode},
+  frame=single,rulecolor=\color{NoteRule},framerule=0.3pt,
+  framesep=9pt,xleftmargin=10pt,xrightmargin=10pt,
+  aboveskip=12pt,belowskip=12pt,
   columns=fullflexible,keepspaces=true,showstringspaces=false,
   breaklines=true,breakatwhitespace=false,tabsize=4,
   numbers=none,numberstyle=\scriptsize\color{NoteMuted},numbersep=12pt}
@@ -102,9 +113,9 @@
 \NewDocumentEnvironment{notesignal}{O{} +b}{%
   \begin{center}\begin{tikzpicture}
     \begin{axis}[width=0.94\linewidth,height=5cm,
-      axis line style={NoteMuted},tick style={NoteMuted},
+      axis lines=left,axis line style={NoteMuted!65},tick style={NoteMuted!65},
       tick label style={font=\small},label style={font=\small},
-      grid=major,grid style={NoteMuted!15},
+      grid=major,grid style={NoteRule!65},
       every axis plot/.append style={thick,NoteAccent},
       legend style={draw=none,fill=none,font=\small},#1]
       #2

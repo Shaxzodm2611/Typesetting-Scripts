@@ -86,9 +86,7 @@ discrete approximation of the continuous RC model, with $\tau=RC$.
 
 % =================== Topic 5: embedded code ========================
 \notesection{Code fragments from the lecture}
-\textbf{C: one sample update.} The caller stores the returned value as the
-next state. For positive $T_s$ and $\tau$, the coefficient lies between zero
-and one.
+\textbf{C: one sample update.} Store the return value as the next state.
 
 \begin{notecode}[language=C]
 float lowpass_step(float x, float previous_y, float alpha)
@@ -97,9 +95,7 @@ float lowpass_step(float x, float previous_y, float alpha)
 }
 \end{notecode}
 
-\textbf{ARM Thumb: bit-mask illustration.} Here \texttt{r1} holds a flags
-word. The fragment sets bit 5 and leaves the other bits in that word unchanged.
-It uses \texttt{r0} as a temporary register.
+\textbf{ARM Thumb:} set bit 5 in \texttt{r1}; \texttt{r0} is a temporary register.
 
 \begin{notecode}[language=ARM]
 MOVS r0, #1       ; Start with a single set bit

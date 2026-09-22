@@ -32,7 +32,8 @@ pdflatex --version
 latexmk --version
 ```
 
-The package uses `fontenc`, `lmodern`, `geometry`, `amsmath`, `amssymb`, `xcolor`,
+The package uses `fontenc`, `lmodern`, `mathpazo`, `helvet`, `microtype`,
+`geometry`, `amsmath`, `amssymb`, `xcolor`,
 `booktabs`, `tabularx`, `fancyhdr`, `tcolorbox`, `circuitikz`, `pgfplots`, and
 `xparse`, `needspace`, and `listings`. A minimal TeX installation may need additional packages. No shell
 escape or external image-conversion program is needed for this sample.
@@ -84,14 +85,20 @@ or prefilled section structure.
 
 ## Reusable blocks
 
-All blocks use the same muted teal accent, dark text, and subtle backgrounds.
-Change `NoteAccent`, `NoteTint`, `NoteInk`, and `NoteMuted` in the local `.sty`
-file to adjust the palette.
+The modern-textbook style pairs Palatino body text and mathematics with crisp
+sans-serif headings, dark ink, and a muted teal accent. Key equations receive
+a pale background; definitions use a slim rule, assumptions stay inline, and
+derivations sit on white. Tables use fine horizontal rules and code uses a
+neutral background. The fonts are supplied by standard TeX packages and require
+no operating-system font installation.
+
+Change `NoteAccent`, `NoteTint`, `NoteInk`, `NoteMuted`, `NoteRule`, and `NoteCode`
+in the local `.sty` file to adjust the palette.
 
 ### Topic divider
 
 Use one divider for each topic or subtopic covered in a lecture. It creates an
-unnumbered teal heading and a thin matching rule, with space reserved for the
+unnumbered dark heading and a short teal rule, with space reserved for the
 content that follows. The sample demonstrates two topics and uses matching
 comment dividers to make its source easy to scan. Blank lectures do not include
 any topic headings until you add them.
@@ -125,7 +132,7 @@ For several lines, use `\begin{aligned} ... \end{aligned}` inside that argument.
 
 The first argument specifies columns; use an `X` column for text that fills
 the available width. The second argument is the header row. End each body row
-with `\\`. Header shading, padding, and rules come from the package.
+with `\\`. Column padding and fine horizontal rules come from the package.
 
 ```latex
 \begin{notetable}{lXr}{\textbf{Symbol} & \textbf{Meaning} & \textbf{Value}}
