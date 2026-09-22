@@ -48,7 +48,62 @@ $f_c$ & Half-power cutoff frequency & $1.59\,\mathrm{kHz}$ \\
     at (axis cs:0.25,1.02) {$63.2\%$ at $t=\tau$};
 \end{notesignal}
 
-\textbf{Problem-set check.} At DC, the gain tends to one. At the cutoff,
+\textbf{Frequency conventions.} At DC, the gain tends to one. At the cutoff,
 $|H|=1/\sqrt{2}$ and the phase is $-45^\circ$.
 Use $\omega_c=1/RC$ for rad/s and $f_c=1/(2\pi RC)$ for Hz.
+
+\newpage
+% =================== Topic 3: sampled signals ======================
+\notesection{Sampled signals: definitions and notation}
+
+\notedefinition{Sampling period}{The interval $T_s$ between successive
+samples. The sampling frequency is $f_s=1/T_s$. A sampled input is written
+$x[n]=v_{\mathrm{in}}(nT_s)$, where $n$ is an integer sample index.}
+
+\begin{notation}
+$T_s$ & Sampling period & $\mathrm{s}$ \\
+$f_s$ & Sampling frequency & $\mathrm{Hz}$ \\
+$x[n]$ & Input voltage sample & $\mathrm{V}$ \\
+$y[n]$ & Filtered output sample & $\mathrm{V}$ \\
+$\alpha$ & Discrete filter coefficient & dimensionless \\
+\end{notation}
+
+% ================== Topic 4: model derivation ======================
+\notesection{From the circuit equation to a recurrence}
+Using a backward difference for the output derivative gives a simple
+discrete approximation of the continuous RC model, with $\tau=RC$.
+
+\begin{notederivation}{Backward-Euler discretization}
+  \tau\frac{dy}{dt}+y &= x
+    && \text{continuous model} \\
+  \tau\frac{y[n]-y[n-1]}{T_s}+y[n] &= x[n]
+    && \text{backward difference} \\
+  (\tau+T_s)y[n] &= T_s x[n]+\tau y[n-1]
+    && \text{collect terms} \\
+  y[n] &= y[n-1]+\alpha\bigl(x[n]-y[n-1]\bigr)
+    && \alpha=\frac{T_s}{\tau+T_s}
+\end{notederivation}
+
+% =================== Topic 5: embedded code ========================
+\notesection{Code fragments from the lecture}
+\textbf{C: one sample update.} The caller stores the returned value as the
+next state. For positive $T_s$ and $\tau$, the coefficient lies between zero
+and one.
+
+\begin{notecode}[language=C]
+float lowpass_step(float x, float previous_y, float alpha)
+{
+    return previous_y + alpha * (x - previous_y);
+}
+\end{notecode}
+
+\textbf{ARM Thumb: bit-mask illustration.} Here \texttt{r1} holds a flags
+word. The fragment sets bit 5 and leaves the other bits in that word unchanged.
+It uses \texttt{r0} as a temporary register.
+
+\begin{notecode}[language=ARM]
+MOVS r0, #1       ; Start with a single set bit
+LSLS r0, r0, #5   ; Move it to bit 5
+ORRS r1, r1, r0   ; Set that bit in the flags word
+\end{notecode}
 \end{document}

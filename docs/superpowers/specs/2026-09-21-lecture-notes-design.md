@@ -2,7 +2,7 @@
 
 ## Purpose and agreed requirements
 
-Create short lecture summaries after class without spending time that would be better spent on problem sets. The user studies analog and digital integrated circuits, ARM-focused embedded systems, and digital communications. All courses use the same blank template and formatting package.
+Create short lecture summaries after class with minimal time spent on formatting. This is a lecture-summary workflow; problem sets will never be typeset. The user studies analog and digital integrated circuits, ARM-focused embedded systems, and digital communications. All courses use the same blank template and formatting package.
 
 The implementation language is Go. Prebuilt Windows and Linux executables require neither Go nor Python on the user's machine. The `notes` command works from any directory after installation on PATH. The user edits LaTeX in VS Code; the IDE owns compilation and PDF preview. This tool does not run a TeX compiler.
 
@@ -86,6 +86,15 @@ Optional topic dividers use an unnumbered accent heading and a thin matching rul
 
 Circuit and signal content remains user supplied. The tool does not call ChatGPT, interpret images, or generate diagrams. Include a short copyable prompt in the documentation for requesting compatible drawing code from an image.
 
+The package also supplies `\notedefinition{Term}{Explanation}`, a `notation`
+environment with fixed Symbol/Meaning/Unit columns, a `notederivation{Title}`
+environment containing unnumbered aligned equations and optional annotations,
+and a verbatim `notecode` environment. Code defaults to C and accepts options
+for C++, ARM instruction highlighting, plain text, and optional line numbers.
+Use `listings`, so code needs no Python or shell escape. Derivations represent
+lecture reasoning, and code blocks capture lecture examples; no problem-set
+or worked-solution workflow is introduced.
+
 ## Repository and distribution
 
 Use a small Go module with focused CLI, filesystem lifecycle, and embedded-asset code. Prefer the standard library unless a concrete portability requirement calls for a dependency. Ship a README, `.gitignore`, examples, and automated checks alongside the source. Examples live separately; generated lecture documents remain blank.
@@ -99,7 +108,7 @@ Configure GitHub Actions to test on Windows and Linux and build executable artif
 - Test CLI argument handling, positive lecture-number validation, safe course codes, generated names, and refusal to overwrite existing work.
 - Test template substitution and generation from a working directory containing spaces.
 - Compile the blank template and verify exactly one page, header contents, and absence of body sections or examples.
-- Compile a separate example exercising equations, assumptions, tables, a circuit, and a signal plot; visually inspect its rendered pages.
+- Compile a separate example exercising equations, assumptions, tables, topic dividers, definitions, notation, derivations, C and ARM code, a circuit, and a signal plot; visually inspect its rendered pages.
 - Test cleanup confirmation, cancellation, `--yes`, noninteractive refusal, invalid ownership metadata, missing or invalid PDFs, nested contents, link handling, and preservation of the final PDF's exact bytes.
 - Test that cleanup cannot affect files outside the lecture directory and that successful cleanup leaves exactly one file.
 - Run Go tests and platform builds locally where supported. Use Windows and Linux CI for native platform checks; distinguish locally verified behavior from CI checks that have only been configured.

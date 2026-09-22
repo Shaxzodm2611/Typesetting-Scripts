@@ -12,6 +12,7 @@
 \RequirePackage{pgfplots}
 \RequirePackage{xparse}
 \RequirePackage{needspace}
+\RequirePackage{listings}
 \pgfplotsset{compat=1.18}
 
 \definecolor{NoteAccent}{HTML}{286B70}
@@ -50,6 +51,16 @@
   \begin{tcolorbox}[noteblock]
     {\sffamily\bfseries\small\color{NoteAccent}Assumption}\quad #1
   \end{tcolorbox}}
+\NewDocumentCommand{\notedefinition}{m +m}{%
+  \begin{tcolorbox}[noteblock]
+    {\sffamily\bfseries\small\color{NoteAccent}Definition: #1}\par
+    #2
+  \end{tcolorbox}}
+\NewDocumentEnvironment{notederivation}{m +b}{%
+  \begin{tcolorbox}[noteblock]
+    {\sffamily\bfseries\small\color{NoteAccent}#1}\par
+    \begin{align*}#2\end{align*}
+  \end{tcolorbox}}{}
 \NewDocumentEnvironment{notetable}{m m +b}{%
   \par\addvspace{7pt}\begingroup
   \renewcommand{\arraystretch}{1.25}\setlength{\tabcolsep}{9pt}
@@ -59,6 +70,31 @@
     #3
     \bottomrule
   \end{tabularx}\endgroup\par\addvspace{7pt}}{}
+\NewDocumentEnvironment{notation}{+b}{%
+  \begin{notetable}{lXl}{\textbf{Symbol} & \textbf{Meaning} & \textbf{Unit}}
+    #1
+  \end{notetable}}{}
+
+% Code is read verbatim: underscores, braces, and # need no LaTeX escaping.
+% This ARM lexer highlights a small core vocabulary; it is not an assembler.
+\lstdefinelanguage{ARM}{sensitive=false,
+  morekeywords={mov,movs,movw,movt,ldr,ldrb,ldrh,str,strb,strh,
+    add,adds,sub,subs,mul,muls,cmp,b,beq,bne,bl,bx,push,pop,
+    and,ands,orr,orrs,eor,eors,lsl,lsls,lsr,lsrs},
+  morecomment=[l]{;}}
+\lstdefinestyle{notecode}{language=C,
+  basicstyle=\small\ttfamily\color{NoteInk},
+  keywordstyle=\bfseries\color{NoteAccent},
+  commentstyle=\itshape\color{NoteMuted},
+  stringstyle=\color{NoteAccent},
+  backgroundcolor=\color{NoteTint},
+  frame=l,rulecolor=\color{NoteAccent},framerule=1.5pt,
+  framesep=8pt,xleftmargin=10pt,xrightmargin=8pt,
+  aboveskip=10pt,belowskip=10pt,
+  columns=fullflexible,keepspaces=true,showstringspaces=false,
+  breaklines=true,breakatwhitespace=false,tabsize=4,
+  numbers=none,numberstyle=\scriptsize\color{NoteMuted},numbersep=12pt}
+\lstnewenvironment{notecode}[1][]{\lstset{style=notecode,#1}}{}
 \NewDocumentEnvironment{notecircuit}{O{} +b}{%
   \begin{center}\begin{circuitikz}[color=NoteInk,#1]
     #2

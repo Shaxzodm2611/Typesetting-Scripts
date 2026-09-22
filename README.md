@@ -2,7 +2,9 @@
 
 Fast, consistent after-lecture summaries for engineering courses. Edit LaTeX
 in VS Code and reuse a small formatting package for equations, assumptions,
-tables, circuits, and signal plots.
+tables, definitions, notation, derivations, code, circuits, and signal plots.
+This is a lecture-summary workflow. Problem sets will not be typeset; the aim
+is to keep summarizing lecture material quick and consistent.
 
 **Current status:** the formatting preview is usable now. The Go CLI and
 downloadable executables have not been implemented yet. The CLI installation
@@ -32,7 +34,7 @@ latexmk --version
 
 The package uses `fontenc`, `lmodern`, `geometry`, `amsmath`, `amssymb`, `xcolor`,
 `booktabs`, `tabularx`, `fancyhdr`, `tcolorbox`, `circuitikz`, `pgfplots`, and
-`xparse`, and `needspace`. A minimal TeX installation may need additional packages. No shell
+`xparse`, `needspace`, and `listings`. A minimal TeX installation may need additional packages. No shell
 escape or external image-conversion program is needed for this sample.
 
 ### 2. Set up VS Code
@@ -131,6 +133,62 @@ $R$ & Resistance & $1\,\mathrm{k}\Omega$ \\
 $C$ & Capacitance & $100\,\mathrm{nF}$ \\
 \end{notetable}
 ```
+
+### Definition and notation
+
+Use a definition block for a concept and the notation table for its symbols.
+The notation table supplies the three column headings automatically.
+
+```latex
+\notedefinition{Sampling period}{The time $T_s$ between successive samples.}
+
+\begin{notation}
+$T_s$ & Sampling period & $\mathrm{s}$ \\
+$f_s$ & Sampling frequency & $\mathrm{Hz}$ \\
+$n$ & Sample index & dimensionless \\
+\end{notation}
+```
+
+### Derivation
+
+The body is an unnumbered `align` environment: align on `&`, separate lines
+with `\\`, and add explanations using `\text{...}`. Do not wrap it in another
+math environment. Keep each derivation short enough to fit a page; split a long
+derivation into successive blocks at a logical step.
+
+```latex
+\begin{notederivation}{RC transfer function}
+  V_{\mathrm{in}} &= RI + V_{\mathrm{out}} && \text{voltage law} \\
+  I &= sC V_{\mathrm{out}} && \text{zero initial conditions} \\
+  H(s) &= \frac{1}{1+sRC} && \text{collect terms}
+\end{notederivation}
+```
+
+### Code
+
+`notecode` preserves indentation and uses a subtle background with matching
+syntax accents. C is the default; C++, a small ARM instruction vocabulary, and
+plain text are also supported. ARM highlighting is not instruction validation.
+Write code literally: do not escape `_`, `#`, braces, or `%` as LaTeX.
+No Python, Pygments, or shell escape is needed.
+
+```latex
+\begin{notecode}[language=C]
+float gain(float voltage_in, float scale)
+{
+    return voltage_in * scale;
+}
+\end{notecode}
+
+\begin{notecode}[language=ARM]
+MOVS r0, #1
+LSLS r0, r0, #5
+\end{notecode}
+```
+
+Use `language=C++` for C++, `language={}` for plain text, or add
+`numbers=left` for optional line numbers. Keep code environments directly in
+the document rather than inside arguments to other commands.
 
 ### Circuit
 
