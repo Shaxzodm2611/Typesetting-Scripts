@@ -1,0 +1,67 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{lecturenotes}[2026/09/21 Lecture summary formatting preview]
+\RequirePackage[T1]{fontenc}
+\RequirePackage{lmodern}
+\RequirePackage[margin=22mm,includehead,headheight=24pt,headsep=8mm]{geometry}
+\RequirePackage{amsmath,amssymb}
+\RequirePackage[table]{xcolor}
+\RequirePackage{booktabs,tabularx}
+\RequirePackage{fancyhdr}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{circuitikz}
+\RequirePackage{pgfplots}
+\RequirePackage{xparse}
+\pgfplotsset{compat=1.18}
+
+\definecolor{NoteAccent}{HTML}{286B70}
+\definecolor{NoteTint}{HTML}{EFF6F5}
+\definecolor{NoteInk}{HTML}{243436}
+\definecolor{NoteMuted}{HTML}{596D70}
+\color{NoteInk}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{NoteAccent}\leaders\hrule height \headrulewidth\hfill}}
+\newcommand{\lectureheader}[2]{%
+  \fancyhead[L]{\sffamily\bfseries\color{NoteAccent}#1}%
+  \fancyhead[R]{\sffamily\color{NoteMuted}Lecture #2}}
+
+\tcbset{noteblock/.style={enhanced,breakable,colback=NoteTint,
+  colframe=NoteAccent,boxrule=0pt,leftrule=1.5pt,arc=0pt,
+  left=10pt,right=10pt,top=6pt,bottom=6pt,
+  before skip=9pt,after skip=9pt}}
+\NewDocumentCommand{\keyequation}{m m}{%
+  \begin{tcolorbox}[noteblock]
+    {\sffamily\bfseries\small\color{NoteAccent}#1}\par
+    \vspace{-5pt}\begin{equation*}#2\end{equation*}\vspace{-9pt}
+  \end{tcolorbox}}
+\NewDocumentCommand{\assumption}{+m}{%
+  \begin{tcolorbox}[noteblock]
+    {\sffamily\bfseries\small\color{NoteAccent}Assumption}\quad #1
+  \end{tcolorbox}}
+\NewDocumentEnvironment{notetable}{m m +b}{%
+  \par\addvspace{7pt}\begingroup
+  \renewcommand{\arraystretch}{1.25}\setlength{\tabcolsep}{9pt}
+  \noindent\begin{tabularx}{\linewidth}{#1}
+    \rowcolor{NoteTint}#2\\
+    \arrayrulecolor{NoteAccent}\midrule
+    #3
+    \bottomrule
+  \end{tabularx}\endgroup\par\addvspace{7pt}}{}
+\NewDocumentEnvironment{notecircuit}{O{} +b}{%
+  \begin{center}\begin{circuitikz}[color=NoteInk,#1]
+    #2
+  \end{circuitikz}\end{center}}{}
+\NewDocumentEnvironment{notesignal}{O{} +b}{%
+  \begin{center}\begin{tikzpicture}
+    \begin{axis}[width=0.94\linewidth,height=5cm,
+      axis line style={NoteMuted},tick style={NoteMuted},
+      tick label style={font=\small},label style={font=\small},
+      grid=major,grid style={NoteMuted!15},
+      every axis plot/.append style={thick,NoteAccent},
+      legend style={draw=none,fill=none,font=\small},#1]
+      #2
+    \end{axis}
+  \end{tikzpicture}\end{center}}{}

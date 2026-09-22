@@ -1,0 +1,51 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{lecturenotes}
+\lectureheader{ECE342}{2}
+
+\begin{document}
+{\large\sffamily\bfseries RC low-pass filter}\par
+A resistor and capacitor smooth a changing input. Take the output across
+the capacitor: slow changes pass through, while fast changes are attenuated.
+
+\assumption{Ideal voltage source, ideal components, and no output load.
+For the step response, the capacitor is initially uncharged.}
+
+\keyequation{Transfer function and cutoff}{
+  H(s)=\frac{V_{\mathrm{out}}(s)}{V_{\mathrm{in}}(s)}
+      =\frac{1}{1+sRC},\qquad
+  \tau=RC,\qquad f_c=\frac{1}{2\pi RC}
+}
+
+\begin{notetable}{lXr}{\textbf{Quantity} & \textbf{Meaning} & \textbf{Value}}
+$R$ & Series resistance & $1.0\,\mathrm{k}\Omega$ \\
+$C$ & Shunt capacitance & $100\,\mathrm{nF}$ \\
+$\tau$ & Time constant & $100\,\mu\mathrm{s}$ \\
+$f_c$ & Half-power cutoff frequency & $1.59\,\mathrm{kHz}$ \\
+\end{notetable}
+
+\begin{notecircuit}
+  \draw (0,0) node[ground]{} to[V,l=$v_{\mathrm{in}}$] (0,2)
+    to[R,l=$R$] (3,2) to[short,-o] (4.2,2)
+    node[right]{$v_{\mathrm{out}}$};
+  \draw (3,2) to[C,l=$C$,*-] (3,0) node[ground]{};
+\end{notecircuit}
+
+\keyequation{Response to a step of amplitude $V_0$}{
+  v_{\mathrm{out}}(t)=V_0\!\left(1-e^{-t/\tau}\right),\qquad t\geq 0
+}
+
+\begin{notesignal}[
+  xlabel={Time $t/\tau$},ylabel={$v_{\mathrm{out}}/V_0$},
+  xmin=0,xmax=5,ymin=0,ymax=1.08,
+  xtick={0,1,2,3,4,5},ytick={0,0.5,1},
+  height=4.6cm]
+  \addplot[domain=0:5,samples=100] {1-exp(-x)};
+  \addplot[only marks,mark=*,mark size=2pt] coordinates {(1,0.63212)};
+  \node[anchor=north west,font=\small,text=NoteAccent]
+    at (axis cs:0.25,1.02) {$63.2\%$ at $t=\tau$};
+\end{notesignal}
+
+\textbf{Problem-set check.} At DC, the gain tends to one. At the cutoff,
+$|H|=1/\sqrt{2}$ and the phase is $-45^\circ$.
+Use $\omega_c=1/RC$ for rad/s and $f_c=1/(2\pi RC)$ for Hz.
+\end{document}

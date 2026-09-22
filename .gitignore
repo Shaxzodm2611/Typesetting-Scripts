@@ -1,0 +1,23 @@
+# LaTeX intermediates (source, style files, and review PDFs stay tracked)
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.nav
+*.snm
+*.vrb
+*.xdv
+*.bbl
+*.blg
+
+# Local builds and operating-system files
+/bin/
+/dist/
+*.exe
+.DS_Store
+Thumbs.db
