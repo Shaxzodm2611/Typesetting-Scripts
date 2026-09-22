@@ -29,11 +29,11 @@
 \setlength{\parskip}{5pt}
 \pagestyle{fancy}
 \fancyhf{}
-\renewcommand{\headrulewidth}{0.4pt}
-\renewcommand{\headrule}{\hbox to\headwidth{\color{NoteRule}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{NoteAccent}\leaders\hrule height \headrulewidth\hfill}}
 \newcommand{\lectureheader}[2]{%
-  \fancyhead[L]{\small\sffamily\bfseries\color{NoteAccent}\textls[80]{#1}}%
-  \fancyhead[R]{\small\sffamily\color{NoteMuted}Lecture #2}}
+  \fancyhead[L]{\fontsize{12}{14}\selectfont\sffamily\bfseries\color{NoteAccent}\textls[60]{#1}}%
+  \fancyhead[R]{\fontsize{11}{13}\selectfont\sffamily\bfseries\color{NoteInk}Lecture #2}}
 
 % Optional topic dividers. New lectures still start without any sections.
 \NewDocumentCommand{\notesection}{m}{%
