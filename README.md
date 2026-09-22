@@ -6,9 +6,29 @@ tables, definitions, notation, derivations, code, circuits, and signal plots.
 This is a lecture-summary workflow. Problem sets will not be typeset; the aim
 is to keep summarizing lecture material quick and consistent.
 
-**Current status:** the formatting preview is usable now. The Go CLI and
-downloadable executables have not been implemented yet. The CLI installation
-and usage sections below describe the agreed interface, not an available release.
+**Current status:** the Go CLI is implemented. Windows amd64, Linux amd64,
+and Linux arm64 executables can be built from this repository. Local packaged
+builds accompany this delivery; no public GitHub release has been published.
+
+## Quick start
+
+After [installing the executable](#cli-installation) and setting up LaTeX:
+
+```text
+notes new ECE342 2
+```
+
+Open `ECE342/lecture-02/lecture.tex` in VS Code, type your summary, and compile
+with LaTeX Workshop. When you have reviewed the PDF and finished editing:
+
+```text
+notes clean ECE342/lecture-02
+```
+
+Confirm the prompt to keep only `lecture.pdf`. **This permanently deletes the
+editable source, formatting package, figures, and all other contents in that
+lecture folder.** Stop any automatic build/watch process before finalizing.
+Keep a separate copy beforehand if you want to edit the lecture later.
 
 ## Try the formatting now
 
@@ -16,7 +36,7 @@ Open [the compiled sample](examples/rc-filter/lecture.pdf), or edit
 [lecture.tex](examples/rc-filter/lecture.tex). It loads the actual local
 [lecturenotes.sty](examples/rc-filter/lecturenotes.sty); the formatting is not
 duplicated in the sample source. The sample intentionally contains demonstration
-content. New lectures will start blank with only the course/lecture header.
+content. New lectures start blank with only the course/lecture header.
 
 ### 1. Install LaTeX
 
@@ -56,7 +76,7 @@ Set this in VS Code settings to keep the PDF next to the source:
 }
 ```
 
-Keep the default job name, `lecture`. The planned cleanup command expects the
+Keep the default job name, `lecture`. The cleanup command expects the
 final file to be `lecture.pdf` in the lecture directory, not in a build subfolder.
 
 Alternatively, compile the sample directly from its folder:
@@ -233,11 +253,19 @@ paste it directly into the document, outside these wrappers. Remove any supplied
 document class, preamble, or `document` environment. Check the rendered result
 against the image, especially circuit connections and plot scales.
 
-## Planned CLI installation
+## CLI installation
 
-These instructions will apply once executable builds are available. There are
-no release downloads yet. Running a prebuilt executable will require neither
-Go nor Python; LaTeX is still required to compile your notes through VS Code.
+Use the local platform archive supplied with this project. Alternatively, once
+the repository is pushed and its workflow has completed successfully, open
+GitHub **Actions → Build and verify notes → a successful run → Artifacts** and
+download `notes-windows-amd64`, `notes-linux-amd64`, or `notes-linux-arm64`.
+Extract the archive first. Each build includes the executable and SHA-256
+checksums. CI artifacts require a signed-in GitHub account and expire according
+to the repository's retention policy; they are not permanent release downloads.
+
+Running the executable requires neither Go nor Python. LaTeX is still required
+to compile your notes through VS Code. On Linux, `uname -m` reports `x86_64`
+for amd64 or `aarch64` for arm64. On Windows, use the amd64 build on an x64 PC.
 
 ### Windows
 
@@ -264,10 +292,26 @@ startup file (`~/.bashrc` for Bash or `~/.zshrc` for Zsh), then open a new termi
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
-Run `notes --help` to verify installation. Source-build instructions will be
-added with the Go implementation; the current repository has no Go module yet.
+Run `notes --help` to verify installation. To build from source, install [Go 1.25 or newer](https://go.dev/dl/) and run
+one of these commands from the repository root:
 
-## Planned CLI workflow
+```sh
+# Linux
+mkdir -p bin
+go build -trimpath -o bin/notes ./cmd/notes
+```
+
+```powershell
+# Windows PowerShell
+New-Item -ItemType Directory -Force bin | Out-Null
+go build -trimpath -o bin/notes.exe ./cmd/notes
+```
+
+Install that binary using the platform instructions above. The first source
+build downloads the pinned Go terminal-handling dependency; ordinary CLI use
+is entirely offline. `go test ./...` and `go vet ./...` run the code checks.
+
+## CLI workflow
 
 From the directory where you keep your course notes:
 
@@ -275,14 +319,14 @@ From the directory where you keep your course notes:
 notes new ECE342 2
 ```
 
-This will create `ECE342/lecture-02/` containing `lecture.tex`,
-`lecturenotes.sty`, and a `.notes.json` ownership marker. It will refuse to
+This creates `ECE342/lecture-02/` containing `lecture.tex`,
+`lecturenotes.sty`, and a `.notes.json` ownership marker. It refuses to
 overwrite an existing lecture folder. Course codes accept letters, digits,
 hyphens, and underscores, subject to Windows filename restrictions. The lecture
 number is a positive integer.
 
 Open that folder in VS Code, edit `lecture.tex`, and build with LaTeX Workshop.
-The command itself will not compile the document.
+The command itself does not compile the document.
 
 After reviewing the final PDF:
 
@@ -291,23 +335,55 @@ notes clean ECE342/lecture-02
 ```
 
 **This is finalization, not ordinary LaTeX auxiliary-file cleanup.** After
-confirmation, it will permanently delete everything in that generated lecture
+confirmation, it permanently deletes everything in that generated lecture
 folder except `lecture.pdf`, including source, the `.sty` package, figures,
 subdirectories, and its marker. Copy the folder elsewhere first if you want to
-retain editable material. Other course/lecture folders will not be removed.
+retain editable material. Other course/lecture folders are not removed.
 
 ```text
 notes clean ECE342/lecture-02 --yes
 ```
 
-`--yes` will skip the confirmation. Cleanup will require the tool's marker and
+`--yes` skips the confirmation. Cleanup requires the tool's marker and
 a nonempty PDF with a PDF signature. It cannot determine whether your PDF is
-up to date or visually correct. It will refuse an unmarked folder, including
-this hand-authored example. After successful cleanup, the marker will be gone
-and a repeated cleanup will refuse the already-finalized folder.
+up to date or visually correct. It refuses an unmarked folder, including
+this hand-authored example. After successful cleanup, the marker is gone
+and a repeated cleanup refuses the already-finalized folder.
 
 ## Project design
 
 See the [design specification](docs/superpowers/specs/2026-09-21-lecture-notes-design.md).
 The repository origin is `https://github.com/Shaxzodm2611/Typesetting-Scripts`.
-The present changes are local; configuring an origin does not publish them.
+Configuring an origin does not publish commits or workflow artifacts.
+
+The canonical formatting package is `internal/lecture/assets/lecturenotes.sty`.
+The copy beside the sample is kept byte-identical by a regression test. The
+executable embeds the package, so moving a generated lecture between computers
+does not require copying any globally installed package.
+
+### Cleanup details and troubleshooting
+
+- The PDF and marker must be named exactly `lecture.pdf` and `.notes.json`,
+  including letter case, for consistent behavior on both platforms.
+- Course codes retain their case. If a course already exists, reuse its exact
+  spelling; a case-only spelling conflict is refused even on Linux.
+- Cleanup refuses symbolic links and Windows reparse points/junctions anywhere
+  in the lecture path or contents. Remove the link entry before finalizing;
+  its external target is not removed by the tool.
+- If the PDF or ownership marker changes while confirmation is pending, cleanup
+  refuses. Review the latest PDF and run the command again.
+- If an ordinary deletion fails (for example, a Windows file is locked), the
+  PDF and ownership marker remain so you can fix the problem and retry. Some
+  other files may already have been removed.
+- A PDF signature check establishes only that the file starts like a PDF; it
+  does not establish that the document is complete, valid, or up to date.
+- Noninteractive cleanup requires `--yes`; piping `yes` into the command does
+  not bypass that policy. An explicit negative answer cancels with exit code 0;
+  failures return 1, and invalid command syntax returns 2.
+
+### Verification
+
+GitHub Actions is configured to test natively on Windows and Linux with the Go
+1.25 floor and current stable Go, compile the blank and sample LaTeX documents,
+and build all three executable targets. A configured workflow is not evidence
+that a remote run has completed; inspect the Actions run when published.

@@ -1,0 +1,95 @@
+name: Build and verify notes
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        go: ['1.25.x', stable]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ matrix.go }}
+      - run: go test ./...
+      - run: go vet ./...
+
+  latex:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+      - name: Install TeX and PDF inspection tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended texlive-pictures lmodern poppler-utils
+      - name: Compile blank template and all-block sample
+        shell: bash
+        run: |
+          set -euo pipefail
+          go build -o "$RUNNER_TEMP/notes" ./cmd/notes
+          mkdir -p "$RUNNER_TEMP/lecture check"
+          cd "$RUNNER_TEMP/lecture check"
+          "$RUNNER_TEMP/notes" new ECE_342 2
+          cd ECE_342/lecture-02
+          pdflatex -interaction=nonstopmode -halt-on-error lecture.tex > build.stdout
+          test "$(pdfinfo lecture.pdf | awk '/^Pages:/ {print $2}')" = 1
+          pdftotext lecture.pdf text.txt
+          grep -F 'ECE_342' text.txt
+          grep -F 'Lecture 2' text.txt
+          sha256sum lecture.pdf > "$RUNNER_TEMP/lecture.sha256"
+          "$RUNNER_TEMP/notes" clean . --yes
+          test "$(find . -mindepth 1 -maxdepth 1 | wc -l)" = 1
+          sha256sum -c "$RUNNER_TEMP/lecture.sha256"
+          cd "$GITHUB_WORKSPACE/examples/rc-filter"
+          pdflatex -interaction=nonstopmode -halt-on-error lecture.tex > "$RUNNER_TEMP/sample.stdout"
+          if grep -E 'Overfull|Underfull|LaTeX Warning|Package .* Warning' lecture.log; then exit 1; fi
+          test "$(pdfinfo lecture.pdf | awk '/^Pages:/ {print $2}')" = 2
+
+  build:
+    needs: [test, latex]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+            binary: notes
+          - goos: linux
+            goarch: arm64
+            binary: notes
+          - goos: windows
+            goarch: amd64
+            binary: notes.exe
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+      - name: Build standalone executable
+        shell: bash
+        env:
+          CGO_ENABLED: '0'
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          go build -trimpath -ldflags "-s -w -X main.version=${GITHUB_SHA:0:7}" -o "dist/${{ matrix.binary }}" ./cmd/notes
+          cd dist
+          sha256sum "${{ matrix.binary }}" > SHA256SUMS
+      - uses: actions/upload-artifact@v6
+        with:
+          name: notes-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/
+          if-no-files-found: error
