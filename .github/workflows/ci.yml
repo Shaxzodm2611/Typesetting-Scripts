@@ -86,6 +86,7 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
         run: |
           go build -trimpath -ldflags "-s -w -X main.version=${GITHUB_SHA:0:7}" -o "dist/${{ matrix.binary }}" ./cmd/notes
+          cp THIRD_PARTY_NOTICES.md dist/
           cd dist
           sha256sum "${{ matrix.binary }}" > SHA256SUMS
       - uses: actions/upload-artifact@v6
