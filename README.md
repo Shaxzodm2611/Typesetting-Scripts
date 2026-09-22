@@ -390,3 +390,6 @@ GitHub Actions is configured to test natively on Windows and Linux with the Go
 1.25 floor and current stable Go, compile the blank and sample LaTeX documents,
 and build all three executable targets. A configured workflow is not evidence
 that a remote run has completed; inspect the Actions run when published.
+
+See the [verification record](docs/verification.md) for the checks actually run,
+review corrections, and platform limitations.
