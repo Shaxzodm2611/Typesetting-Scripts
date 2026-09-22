@@ -1,0 +1,123 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{lecturenotes}[2026/09/21 Lecture summary formatting preview]
+\RequirePackage[T1]{fontenc}
+\RequirePackage{lmodern}
+\RequirePackage[margin=22mm,includehead,headheight=24pt,headsep=8mm]{geometry}
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{mathpazo}
+\RequirePackage[scaled=0.92]{helvet}
+\RequirePackage{microtype}
+\RequirePackage[table]{xcolor}
+\RequirePackage{booktabs,tabularx}
+\RequirePackage{fancyhdr}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{circuitikz}
+\RequirePackage{pgfplots}
+\RequirePackage{xparse}
+\RequirePackage{needspace}
+\RequirePackage{listings}
+\pgfplotsset{compat=1.18}
+
+\definecolor{NoteAccent}{HTML}{246A70}
+\definecolor{NoteTint}{HTML}{F0F6F5}
+\definecolor{NoteInk}{HTML}{243039}
+\definecolor{NoteMuted}{HTML}{627078}
+\definecolor{NoteRule}{HTML}{D3DFE0}
+\definecolor{NoteCode}{HTML}{F5F7F8}
+\color{NoteInk}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{NoteAccent}\leaders\hrule height \headrulewidth\hfill}}
+\newcommand{\lectureheader}[2]{%
+  \fancyhead[L]{\fontsize{12}{14}\selectfont\sffamily\bfseries\color{NoteAccent}\textls[60]{#1}}%
+  \fancyhead[R]{\fontsize{11}{13}\selectfont\sffamily\bfseries\color{NoteInk}Lecture #2}}
+
+% Optional topic dividers. New lectures still start without any sections.
+\NewDocumentCommand{\notesection}{m}{%
+  \par\addvspace{15pt}\Needspace{5\baselineskip}%
+  {\fontsize{14}{17}\selectfont\sffamily\bfseries\color{NoteInk}#1\par}%
+  \nobreak\vspace{3pt}%
+  {\color{NoteAccent}\hrule width 18mm height 1.2pt}%
+  \nobreak\vspace{7pt}\noindent\ignorespaces}
+
+\tcbset{noteblock/.style={enhanced,breakable,colback=NoteTint,
+  colframe=NoteAccent,boxrule=0pt,leftrule=1.5pt,arc=0pt,
+  left=12pt,right=12pt,top=8pt,bottom=8pt,
+  before skip=9pt,after skip=9pt}}
+\NewDocumentCommand{\keyequation}{m m}{%
+  \begin{tcolorbox}[noteblock]
+    {\sffamily\bfseries\small\color{NoteAccent}#1}\par
+    \setlength{\abovedisplayskip}{5pt}%
+    \setlength{\belowdisplayskip}{0pt}%
+    \begin{equation*}#2\end{equation*}
+  \end{tcolorbox}}
+\NewDocumentCommand{\assumption}{+m}{%
+  \par\addvspace{6pt}\begingroup\small\color{NoteMuted}%
+    {\sffamily\bfseries\color{NoteAccent}Assumption}\enspace #1\par
+  \endgroup\addvspace{6pt}}
+\NewDocumentCommand{\notedefinition}{m +m}{%
+  \begin{tcolorbox}[noteblock,colback=white,leftrule=0.8pt,top=3pt,bottom=3pt]
+    {\sffamily\scriptsize\bfseries\color{NoteAccent}\textls[90]{DEFINITION}}\quad
+    {\bfseries #1}\par
+    #2
+  \end{tcolorbox}}
+\NewDocumentEnvironment{notederivation}{m +b}{%
+  \par\addvspace{9pt}\Needspace{6\baselineskip}\begingroup
+    {\sffamily\bfseries\small\color{NoteMuted}#1}\par\nobreak
+    \setlength{\abovedisplayskip}{5pt}%
+    \setlength{\belowdisplayskip}{5pt}%
+    \setlength{\jot}{5pt}%
+    \begin{align*}#2\end{align*}
+  \endgroup\par\addvspace{6pt}}{}
+\NewDocumentEnvironment{notetable}{m m +b}{%
+  \par\addvspace{7pt}\begingroup
+  \renewcommand{\arraystretch}{1.28}\setlength{\tabcolsep}{9pt}
+  \noindent\begin{tabularx}{\linewidth}{#1}
+    #2\\
+    \arrayrulecolor{NoteRule}\midrule
+    #3
+    \bottomrule
+  \end{tabularx}\endgroup\par\addvspace{7pt}}{}
+\NewDocumentEnvironment{notation}{+b}{%
+  \begin{notetable}{lXl}{\textbf{Symbol} & \textbf{Meaning} & \textbf{Unit}}
+    #1
+  \end{notetable}}{}
+
+% Code is read verbatim: underscores, braces, and # need no LaTeX escaping.
+% This ARM lexer highlights a small core vocabulary; it is not an assembler.
+\lstdefinelanguage{ARM}{sensitive=false,
+  morekeywords={mov,movs,movw,movt,ldr,ldrb,ldrh,str,strb,strh,
+    add,adds,sub,subs,mul,muls,cmp,b,beq,bne,bl,bx,push,pop,
+    and,ands,orr,orrs,eor,eors,lsl,lsls,lsr,lsrs},
+  morecomment=[l]{;}}
+\lstdefinestyle{notecode}{language=C,
+  basicstyle=\small\ttfamily\color{NoteInk},
+  keywordstyle=\bfseries\color{NoteAccent},
+  commentstyle=\itshape\color{NoteMuted},
+  stringstyle=\color{NoteAccent},
+  backgroundcolor=\color{NoteCode},
+  frame=single,rulecolor=\color{NoteRule},framerule=0.3pt,
+  framesep=9pt,xleftmargin=10pt,xrightmargin=10pt,
+  aboveskip=12pt,belowskip=12pt,
+  columns=fullflexible,keepspaces=true,showstringspaces=false,
+  breaklines=true,breakatwhitespace=false,tabsize=4,
+  numbers=none,numberstyle=\scriptsize\color{NoteMuted},numbersep=12pt}
+\lstnewenvironment{notecode}[1][]{\lstset{style=notecode,#1}}{}
+\NewDocumentEnvironment{notecircuit}{O{} +b}{%
+  \begin{center}\begin{circuitikz}[color=NoteInk,#1]
+    #2
+  \end{circuitikz}\end{center}}{}
+\NewDocumentEnvironment{notesignal}{O{} +b}{%
+  \begin{center}\begin{tikzpicture}
+    \begin{axis}[width=0.94\linewidth,height=5cm,
+      axis lines=left,axis line style={NoteMuted!65},tick style={NoteMuted!65},
+      tick label style={font=\small},label style={font=\small},
+      grid=major,grid style={NoteRule!65},
+      every axis plot/.append style={thick,NoteAccent},
+      legend style={draw=none,fill=none,font=\small},#1]
+      #2
+    \end{axis}
+  \end{tikzpicture}\end{center}}{}
