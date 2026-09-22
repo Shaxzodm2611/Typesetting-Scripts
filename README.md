@@ -366,10 +366,13 @@ does not require copying any globally installed package.
 - The PDF and marker must be named exactly `lecture.pdf` and `.notes.json`,
   including letter case, for consistent behavior on both platforms.
 - Course codes retain their case. If a course already exists, reuse its exact
-  spelling; a case-only spelling conflict is refused even on Linux.
+  spelling; case-only course or lecture-folder collisions are refused even on Linux.
 - Cleanup refuses symbolic links and Windows reparse points/junctions anywhere
   in the lecture path or contents. Remove the link entry before finalizing;
-  its external target is not removed by the tool.
+  its external target is not removed by the tool. Path components are checked
+  before resolving `..`, so links cannot be hidden by parent traversal. On
+  Windows, use an ordinary relative path or a fully qualified drive/UNC path,
+  rather than a drive-relative path such as `C:notes` or `\notes`.
 - If the PDF or ownership marker changes while confirmation is pending, cleanup
   refuses. Review the latest PDF and run the command again.
 - If an ordinary deletion fails (for example, a Windows file is locked), the

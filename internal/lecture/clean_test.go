@@ -301,3 +301,36 @@ func TestInspectRequiresCanonicalFilenames(t *testing.T) {
 		})
 	}
 }
+
+func TestInspectLinkedParentTraversal(t *testing.T) {
+	d := fixture(t)
+	base := filepath.Dir(filepath.Dir(d))
+	outside := t.TempDir()
+	child := filepath.Join(outside, "child")
+	os.Mkdir(child, 0755)
+	if err := os.Symlink(child, filepath.Join(base, "alias")); err != nil {
+		t.Skipf("symlink unavailable: %v", err)
+	}
+	raw := base + string(os.PathSeparator) + "alias" + string(os.PathSeparator) + ".." + string(os.PathSeparator) + filepath.Join("ECE342", "lecture-02")
+	before := snapshot(t, d)
+	if f, err := Inspect(raw); err == nil {
+		f.Close()
+		t.Fatal("normalized away a linked component")
+	}
+	if !reflect.DeepEqual(before, snapshot(t, d)) {
+		t.Fatal("changed files")
+	}
+}
+func TestInspectSafeParentTraversal(t *testing.T) {
+	d := fixture(t)
+	child := filepath.Join(d, "child")
+	if err := os.Mkdir(child, 0755); err != nil {
+		t.Fatal(err)
+	}
+	f, err := Inspect(child + string(os.PathSeparator) + "..")
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.Close()
+	unchangedSource(t, d)
+}

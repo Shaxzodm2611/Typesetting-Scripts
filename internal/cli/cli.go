@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -106,7 +107,11 @@ func Run(args []string, cwd string, streams IO, version string) int {
 			return fail(1, fmt.Errorf("cleanup requires an interactive terminal; use --yes only after reviewing the PDF"))
 		}
 		if !filepath.IsAbs(path) {
-			path = filepath.Join(cwd, path)
+			if filepath.VolumeName(path) != "" || (len(path) > 0 && os.IsPathSeparator(path[0])) {
+				return fail(2, fmt.Errorf("use a fully qualified path such as C:\\Notes\\ECE342\\lecture-02"))
+			}
+			// Preserve raw components until Inspect has rejected symlinks/reparse points.
+			path = cwd + string(os.PathSeparator) + path
 		}
 		f, err := lecture.Inspect(path)
 		if err != nil {

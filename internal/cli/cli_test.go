@@ -123,3 +123,35 @@ func TestNewInvalidCourseIsReported(t *testing.T) {
 		t.Fatal("invalid course not reported")
 	}
 }
+
+func TestCleanLinkedParentTraversalPreservesBothCandidates(t *testing.T) {
+	base, outside := t.TempDir(), t.TempDir()
+	var out, errout bytes.Buffer
+	streams := IO{In: strings.NewReader(""), Out: &out, Err: &errout}
+	for _, root := range []string{base, outside} {
+		if Run([]string{"new", "ECE342", "2"}, root, streams, "test") != 0 {
+			t.Fatal(errout.String())
+		}
+		if err := os.WriteFile(filepath.Join(root, "ECE342", "lecture-02", "lecture.pdf"), []byte("%PDF-1.7\nfixture\n"), 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	child := filepath.Join(outside, "child")
+	if err := os.Mkdir(child, 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(child, filepath.Join(base, "alias")); err != nil {
+		t.Skipf("symlink unavailable: %v", err)
+	}
+	raw := "alias" + string(os.PathSeparator) + ".." + string(os.PathSeparator) + filepath.Join("ECE342", "lecture-02")
+	code := Run([]string{"clean", raw, "--yes"}, base, streams, "test")
+	for _, root := range []string{base, outside} {
+		e, err := os.ReadDir(filepath.Join(root, "ECE342", "lecture-02"))
+		if err != nil || len(e) != 4 {
+			t.Fatal("changed a candidate directory", root, e, err)
+		}
+	}
+	if code == 0 {
+		t.Fatal("accepted ambiguous linked traversal")
+	}
+}

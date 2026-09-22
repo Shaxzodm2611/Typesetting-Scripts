@@ -42,11 +42,11 @@ func New(base, course, number string) (string, error) {
 	if !numberPattern.MatchString(number) || err != nil || n < 1 {
 		return "", fmt.Errorf("lecture number must be a positive integer")
 	}
-	base, err = filepath.Abs(base)
-	if err != nil {
+	if err = rejectLinkedPath(base); err != nil {
 		return "", err
 	}
-	if err = rejectLinkedPath(base); err != nil {
+	base, err = filepath.Abs(base)
+	if err != nil {
 		return "", err
 	}
 	root, err := os.OpenRoot(base)
@@ -79,6 +79,15 @@ func New(base, course, number string) (string, error) {
 	}
 	defer courseRoot.Close()
 	name := fmt.Sprintf("lecture-%02d", n)
+	lectureEntries, err := rootEntries(courseRoot)
+	if err != nil {
+		return "", err
+	}
+	for _, e := range lectureEntries {
+		if strings.EqualFold(e.Name(), name) {
+			return "", fmt.Errorf("lecture directory %q already exists; existing lectures are never overwritten", e.Name())
+		}
+	}
 	if err = courseRoot.Mkdir(name, 0755); err != nil {
 		return "", fmt.Errorf("create %s: %w (existing lectures are never overwritten)", name, err)
 	}

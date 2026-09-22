@@ -26,15 +26,15 @@ func (f *Finalization) Directory() string { return f.directory }
 func (f *Finalization) Close() error      { return f.root.Close() }
 
 func Inspect(dir string) (*Finalization, error) {
+	if err := rejectLinkedPath(dir); err != nil {
+		return nil, err
+	}
 	absolute, err := filepath.Abs(dir)
 	if err != nil {
 		return nil, err
 	}
 	if filepath.Dir(absolute) == absolute {
 		return nil, fmt.Errorf("cannot clean a filesystem root")
-	}
-	if err = rejectLinkedPath(absolute); err != nil {
-		return nil, err
 	}
 	root, err := os.OpenRoot(absolute)
 	if err != nil {

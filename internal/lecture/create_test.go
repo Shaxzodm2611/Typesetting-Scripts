@@ -146,3 +146,43 @@ func TestNewCaseCollision(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestNewLectureCaseCollision(t *testing.T) {
+	base := t.TempDir()
+	existing := filepath.Join(base, "ECE342", "LECTURE-02")
+	if err := os.MkdirAll(existing, 0755); err != nil {
+		t.Fatal(err)
+	}
+	sentinel := filepath.Join(existing, "keep.txt")
+	if err := os.WriteFile(sentinel, []byte("keep"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := New(base, "ECE342", "2"); err == nil {
+		t.Fatal("created a case-colliding lecture")
+	}
+	b, err := os.ReadFile(sentinel)
+	if err != nil || string(b) != "keep" {
+		t.Fatal("modified existing lecture")
+	}
+	entries, err := os.ReadDir(filepath.Join(base, "ECE342"))
+	if err != nil || len(entries) != 1 {
+		t.Fatal(entries, err)
+	}
+}
+func TestNewLinkedParentTraversal(t *testing.T) {
+	base, outside := t.TempDir(), t.TempDir()
+	child := filepath.Join(outside, "child")
+	os.Mkdir(child, 0755)
+	if err := os.Symlink(child, filepath.Join(base, "alias")); err != nil {
+		t.Skipf("symlink unavailable: %v", err)
+	}
+	raw := base + string(os.PathSeparator) + "alias" + string(os.PathSeparator) + ".."
+	if _, err := New(raw, "ECE342", "2"); err == nil {
+		t.Fatal("normalized away linked base component")
+	}
+	for _, root := range []string{base, outside} {
+		if _, err := os.Stat(filepath.Join(root, "ECE342")); !os.IsNotExist(err) {
+			t.Fatal("wrote to unintended location", root)
+		}
+	}
+}
