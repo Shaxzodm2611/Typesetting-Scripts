@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{lecturenotes}[2026/09/23 v0.1.1 Lecture summary formatting]
+\ProvidesPackage{lecturenotes}[2026/09/23 v0.1.2 Lecture summary formatting]
 \RequirePackage[T1]{fontenc}
 \RequirePackage{lmodern}
 \RequirePackage[margin=22mm,includehead,headheight=24pt,headsep=8mm]{geometry}
@@ -107,18 +107,24 @@
   breaklines=true,breakatwhitespace=false,tabsize=4,
   numbers=none,numberstyle=\scriptsize\color{NoteMuted},numbersep=12pt}
 \lstnewenvironment{notecode}[1][]{\lstset{style=notecode,#1}}{}
-\NewDocumentEnvironment{notecircuit}{O{} +b}{%
-  \begin{center}\begin{circuitikz}[color=NoteInk,#1]
-    #2
-  \end{circuitikz}\end{center}}{}
-\NewDocumentEnvironment{notesignal}{O{} +b}{%
-  \begin{center}\begin{tikzpicture}
+\NewDocumentEnvironment{notecircuit}{O{} m +b}{%
+  \begin{center}
+    {\sffamily\small\bfseries\color{NoteMuted}#2\par}\vspace{3pt}
+    \begin{circuitikz}[color=NoteInk,#1]
+    #3
+    \end{circuitikz}
+  \end{center}}{}
+\NewDocumentEnvironment{notesignal}{O{} m +b}{%
+  \begin{center}
+    {\sffamily\small\bfseries\color{NoteMuted}#2\par}\vspace{3pt}
+    \begin{tikzpicture}
     \begin{axis}[width=0.94\linewidth,height=5cm,
       axis lines=left,axis line style={NoteMuted!65},tick style={NoteMuted!65},
       tick label style={font=\small},label style={font=\small},
       grid=major,grid style={NoteRule!65},
       every axis plot/.append style={thick,NoteAccent},
       legend style={draw=none,fill=none,font=\small},#1]
-      #2
+      #3
     \end{axis}
-  \end{tikzpicture}\end{center}}{}
+    \end{tikzpicture}
+  \end{center}}{}

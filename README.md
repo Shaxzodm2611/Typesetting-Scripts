@@ -222,11 +222,12 @@ the document rather than inside arguments to other commands.
 
 ### Circuit
 
-Paste CircuitikZ drawing commands inside the wrapper. Do not paste another
-`circuitikz` or `tikzpicture` environment inside it.
+Give the circuit a short title in braces, then paste CircuitikZ drawing commands
+inside the wrapper. Do not paste another `circuitikz` or `tikzpicture`
+environment inside it.
 
 ```latex
-\begin{notecircuit}
+\begin{notecircuit}{RC low-pass topology}
   \draw (0,0) to[R,l=$R$] (3,0);
 \end{notecircuit}
 ```
@@ -234,10 +235,11 @@ Paste CircuitikZ drawing commands inside the wrapper. Do not paste another
 ### Signal plot
 
 The wrapper creates both the TikZ picture and PGFPlots axis. Supply axis
-options in square brackets and plotting commands in the body.
+options in square brackets, a short title in braces, and plotting commands in
+the body.
 
 ```latex
-\begin{notesignal}[xlabel={$t$},ylabel={$v(t)$},xmin=0,xmax=5]
+\begin{notesignal}[xlabel={$t$},ylabel={$v(t)$},xmin=0,xmax=5]{Step response}
   \addplot[domain=0:5,samples=100] {1-exp(-x)};
 \end{notesignal}
 ```
@@ -247,7 +249,8 @@ For image-assisted diagrams, a useful ChatGPT prompt is:
 > Convert this image into LaTeX drawing code. For a circuit, return only the
 > inner CircuitikZ commands for a `notecircuit` environment. For a signal plot,
 > return PGFPlots axis options and inner plot commands for a `notesignal`
-> environment. These wrappers already create their outer environments. Do not
+> environment. Also suggest a concise title for the figure. These wrappers
+> already create their outer environments. Do not
 > include a preamble or document environment. Preserve labels and units, and
 > flag any values or connections that cannot be read confidently.
 
@@ -401,6 +404,7 @@ review corrections, and platform limitations.
 
 Replace the executable to use the updated formatting in new lectures. For an
 existing editable lecture, copy `examples/rc-filter/lecturenotes.sty` into its
-folder and rebuild in VS Code. Version 0.1.1 uses NewTX text and maths; ensure
-the `newtx` TeX package is installed. Existing derivations should use the
-left-aligned column syntax shown above.
+folder and rebuild in VS Code. Version 0.1.2 uses NewTX text and maths and adds
+required titles to circuit and signal-plot environments; ensure the `newtx` TeX
+package is installed. Existing derivations should use the left-aligned column
+syntax shown above.
