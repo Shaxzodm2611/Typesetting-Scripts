@@ -52,11 +52,13 @@ pdflatex --version
 latexmk --version
 ```
 
-The package uses `fontenc`, `lmodern`, `mathpazo`, `helvet`, `microtype`,
-`geometry`, `amsmath`, `amssymb`, `xcolor`,
+The package uses `fontenc`, `lmodern`, `newtxtext`, `newtxmath`, `helvet`,
+`microtype`, `geometry`, `amsmath`, `xcolor`,
 `booktabs`, `tabularx`, `fancyhdr`, `tcolorbox`, `circuitikz`, `pgfplots`, and
-`xparse`, `needspace`, and `listings`. A minimal TeX installation may need additional packages. No shell
-escape or external image-conversion program is needed for this sample.
+`xparse`, `needspace`, and `listings`. A minimal TeX installation may need
+additional packages, including `newtx` (available in `texlive-fonts-extra` on
+Debian/Ubuntu). No shell escape or external image-conversion program is needed
+for this sample.
 
 ### 2. Set up VS Code
 
@@ -105,7 +107,7 @@ or prefilled section structure.
 
 ## Reusable blocks
 
-The modern-textbook style pairs Palatino body text and mathematics with crisp
+The modern-textbook style pairs NewTX body text and mathematics with crisp
 sans-serif headings, dark ink, and a muted teal accent. Key equations receive
 a pale background; definitions use a slim rule, assumptions stay inline, and
 derivations sit on white. Tables use fine horizontal rules and code uses a
@@ -178,16 +180,17 @@ $n$ & Sample index & dimensionless \\
 
 ### Derivation
 
-The body is an unnumbered `align` environment: align on `&`, separate lines
-with `\\`, and add explanations using `\text{...}`. Do not wrap it in another
+The body uses two compact, left-aligned columns. Start each equation with `&`,
+separate lines with `\\`, and add an optional explanation with
+`&& \qquad \text{...}`. Do not wrap it in another
 math environment. Keep each derivation short enough to fit a page; split a long
 derivation into successive blocks at a logical step.
 
 ```latex
 \begin{notederivation}{RC transfer function}
-  V_{\mathrm{in}} &= RI + V_{\mathrm{out}} && \text{voltage law} \\
-  I &= sC V_{\mathrm{out}} && \text{zero initial conditions} \\
-  H(s) &= \frac{1}{1+sRC} && \text{collect terms}
+  & V_{\mathrm{in}} = RI + V_{\mathrm{out}} && \qquad \text{voltage law} \\
+  & I = sC V_{\mathrm{out}} && \qquad \text{zero initial conditions} \\
+  & H(s) = \frac{1}{1+sRC} && \qquad \text{collect terms}
 \end{notederivation}
 ```
 
@@ -393,3 +396,11 @@ that a remote run has completed; inspect the Actions run when published.
 
 See the [verification record](docs/verification.md) for the checks actually run,
 review corrections, and platform limitations.
+
+## Updating the formatting
+
+Replace the executable to use the updated formatting in new lectures. For an
+existing editable lecture, copy `examples/rc-filter/lecturenotes.sty` into its
+folder and rebuild in VS Code. Version 0.1.1 uses NewTX text and maths; ensure
+the `newtx` TeX package is installed. Existing derivations should use the
+left-aligned column syntax shown above.

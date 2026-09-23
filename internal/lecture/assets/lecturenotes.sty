@@ -1,11 +1,12 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{lecturenotes}[2026/09/21 Lecture summary formatting preview]
+\ProvidesPackage{lecturenotes}[2026/09/23 v0.1.1 Lecture summary formatting]
 \RequirePackage[T1]{fontenc}
 \RequirePackage{lmodern}
 \RequirePackage[margin=22mm,includehead,headheight=24pt,headsep=8mm]{geometry}
-\RequirePackage{amsmath,amssymb}
-\RequirePackage{mathpazo}
+\RequirePackage{amsmath}
 \RequirePackage[scaled=0.92]{helvet}
+\RequirePackage{newtxtext}
+\RequirePackage{newtxmath}
 \RequirePackage{microtype}
 \RequirePackage[table]{xcolor}
 \RequirePackage{booktabs,tabularx}
@@ -70,7 +71,7 @@
     \setlength{\abovedisplayskip}{5pt}%
     \setlength{\belowdisplayskip}{5pt}%
     \setlength{\jot}{5pt}%
-    \begin{align*}#2\end{align*}
+    \begin{equation*}\begin{alignedat}{2}#2\end{alignedat}\end{equation*}
   \endgroup\par\addvspace{6pt}}{}
 \NewDocumentEnvironment{notetable}{m m +b}{%
   \par\addvspace{7pt}\begingroup

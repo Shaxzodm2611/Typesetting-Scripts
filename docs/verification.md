@@ -8,6 +8,8 @@
   and lecture metadata. An underscore in a course code renders literally.
 - The complete sample compiles to two pages without LaTeX warnings or overfull/
   underfull boxes. Every page was rendered and visually inspected.
+- The v0.1.1 sample embeds NewTX text and mathematics. Derivation equations use
+  a common left edge with a compact, separately aligned annotation column.
 - The CLI does not invoke a TeX compiler or create PDFs.
 - Cleanup preserves only `lecture.pdf`; the original PDF SHA-256 remains
   unchanged in actual compiled-PDF checks. A real terminal cancellation keeps

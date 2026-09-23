@@ -74,14 +74,14 @@ Using a backward difference for the output derivative gives a simple
 discrete approximation of the continuous RC model, with $\tau=RC$.
 
 \begin{notederivation}{Backward-Euler discretization}
-  \tau\frac{dy}{dt}+y &= x
-    && \text{continuous model} \\
-  \tau\frac{y[n]-y[n-1]}{T_s}+y[n] &= x[n]
-    && \text{backward difference} \\
-  (\tau+T_s)y[n] &= T_s x[n]+\tau y[n-1]
-    && \text{collect terms} \\
-  y[n] &= y[n-1]+\alpha\bigl(x[n]-y[n-1]\bigr)
-    && \alpha=\frac{T_s}{\tau+T_s}
+  & \tau\frac{dy}{dt}+y = x
+    && \qquad \text{continuous model} \\
+  & \tau\frac{y[n]-y[n-1]}{T_s}+y[n] = x[n]
+    && \qquad \text{backward difference} \\
+  & (\tau+T_s)y[n] = T_s x[n]+\tau y[n-1]
+    && \qquad \text{collect terms} \\
+  & y[n] = y[n-1]+\alpha\bigl(x[n]-y[n-1]\bigr)
+    && \qquad \alpha=\frac{T_s}{\tau+T_s}
 \end{notederivation}
 
 % =================== Topic 5: embedded code ========================
