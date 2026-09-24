@@ -119,7 +119,7 @@ in the local `.sty` file to adjust the palette.
 
 ### Topic divider
 
-Use one divider for each topic or subtopic covered in a lecture. It creates an
+Use one divider for each overall topic covered in a lecture. It creates an
 unnumbered dark heading and a short teal rule, with space reserved for the
 content that follows. The sample demonstrates two topics and uses matching
 comment dividers to make its source easy to scan. Blank lectures do not include
@@ -135,6 +135,20 @@ any topic headings until you add them.
 % Next topic's notes go here.
 ```
 
+### Subtopic heading
+
+Use `\subnotesection` to separate related topics within a `\notesection`.
+Its smaller accent heading has less space around it and no divider rule.
+
+```latex
+\notesection{Device Structure}
+\subnotesection{NMOS}
+% NMOS device structure notes go here.
+
+\subnotesection{CMOS}
+% CMOS device structure notes go here.
+```
+
 ### Key equation
 
 ```latex
@@ -143,6 +157,16 @@ any topic headings until you add them.
 
 The second argument is already in display math mode: do not enclose it in `$`.
 For several lines, use `\begin{aligned} ... \end{aligned}` inside that argument.
+An optional third argument in square brackets adds a smaller, indented note
+below the equation:
+
+```latex
+\keyequation{Mass-energy equivalence}{E = mc^2}[
+  \begin{description}
+    \item[$m$] mass
+  \end{description}
+]
+```
 
 ### Assumption
 

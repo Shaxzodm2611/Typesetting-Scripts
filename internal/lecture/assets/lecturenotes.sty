@@ -15,6 +15,8 @@
 \RequirePackage{circuitikz}
 \RequirePackage{pgfplots}
 \RequirePackage{xparse}
+\RequirePackage{multicol}
+\RequirePackage{changepage}
 \RequirePackage{needspace}
 \RequirePackage{listings}
 \pgfplotsset{compat=1.18}
@@ -43,17 +45,28 @@
   \nobreak\vspace{3pt}%
   {\color{NoteAccent}\hrule width 18mm height 1.2pt}%
   \nobreak\vspace{7pt}\noindent\ignorespaces}
+\NewDocumentCommand{\subnotesection}{m}{%
+  \par\addvspace{8pt}\Needspace{3\baselineskip}%
+  {\fontsize{11}{14}\selectfont\sffamily\bfseries\color{NoteAccent}#1\par}%
+  \nobreak\vspace{2pt}\noindent\ignorespaces}
 
 \tcbset{noteblock/.style={enhanced,breakable,colback=NoteTint,
   colframe=NoteAccent,boxrule=0pt,leftrule=1.5pt,arc=0pt,
   left=12pt,right=12pt,top=8pt,bottom=8pt,
   before skip=9pt,after skip=9pt}}
-\NewDocumentCommand{\keyequation}{m m}{%
+\NewDocumentCommand{\keyequation}{m m o}{%
   \begin{tcolorbox}[noteblock]
     {\sffamily\bfseries\small\color{NoteAccent}#1}\par
     \setlength{\abovedisplayskip}{5pt}%
     \setlength{\belowdisplayskip}{0pt}%
     \begin{equation*}#2\end{equation*}
+    \IfValueT{#3}{
+      \vspace{4pt}
+      \begin{adjustwidth}{2.5em}{2.5em}
+        \small
+        #3
+      \end{adjustwidth}
+    }
   \end{tcolorbox}}
 \NewDocumentCommand{\assumption}{+m}{%
   \par\addvspace{6pt}\begingroup\small\color{NoteMuted}%
