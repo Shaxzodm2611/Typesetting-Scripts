@@ -221,16 +221,16 @@ $n$ & Sample index & dimensionless \\
 
 ### Derivation
 
-The body uses two compact, left-aligned columns. Start each equation with `&`,
-separate lines with `\\`, and add an optional explanation with
-`&& \qquad \text{...}`. Do not wrap it in another
+The body uses two compact, left-aligned columns. Start each equation with `&`
+and separate lines with `\\`. For any line, add an optional explanation with
+`&& \qquad \text{...}` or omit that entire part. Do not wrap it in another
 math environment. Keep each derivation short enough to fit a page; split a long
 derivation into successive blocks at a logical step.
 
 ```latex
 \begin{notederivation}{RC transfer function}
   & V_{\mathrm{in}} = RI + V_{\mathrm{out}} && \qquad \text{voltage law} \\
-  & I = sC V_{\mathrm{out}} && \qquad \text{zero initial conditions} \\
+  & I = sC V_{\mathrm{out}} \\
   & H(s) = \frac{1}{1+sRC} && \qquad \text{collect terms}
 \end{notederivation}
 ```
