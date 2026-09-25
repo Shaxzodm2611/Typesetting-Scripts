@@ -1,8 +1,9 @@
 # Typesetting Scripts
 
 Fast, consistent after-lecture summaries for engineering courses. Edit LaTeX
-in VS Code and reuse a small formatting package for equations, assumptions,
-tables, definitions, notation, derivations, code, circuits, and signal plots.
+in VS Code and reuse a small formatting package for topic headings, note boxes,
+equations, assumptions, tables, definitions, notation, derivations, code,
+circuits, and signal plots.
 This is a lecture-summary workflow. Problem sets will not be typeset; the aim
 is to keep summarizing lecture material quick and consistent.
 
@@ -52,10 +53,10 @@ pdflatex --version
 latexmk --version
 ```
 
-The package uses `fontenc`, `lmodern`, `newtxtext`, `newtxmath`, `helvet`,
-`microtype`, `geometry`, `amsmath`, `xcolor`,
-`booktabs`, `tabularx`, `fancyhdr`, `tcolorbox`, `circuitikz`, `pgfplots`, and
-`xparse`, `needspace`, and `listings`. A minimal TeX installation may need
+The package uses `fontenc`, `lmodern`, `geometry`, `amsmath`, `helvet`,
+`newtxtext`, `newtxmath`, `microtype`, `xcolor`, `booktabs`, `tabularx`,
+`fancyhdr`, `tcolorbox`, `circuitikz`, `pgfplots`, `xparse`, `multicol`,
+`changepage`, `needspace`, and `listings`. A minimal TeX installation may need
 additional packages, including `newtx` (available in `texlive-fonts-extra` on
 Debian/Ubuntu). No shell escape or external image-conversion program is needed
 for this sample.
@@ -117,6 +118,18 @@ no operating-system font installation.
 Change `NoteAccent`, `NoteTint`, `NoteInk`, `NoteMuted`, `NoteRule`, and `NoteCode`
 in the local `.sty` file to adjust the palette.
 
+### Recent formatting additions
+
+| Feature | Use |
+| --- | --- |
+| Subtopics | `\subnotesection{NMOS}` adds a smaller heading under `\notesection{Device Structure}`. |
+| General note | `\notebox{Title}{Content}` creates a breakable white box with a teal left rule. |
+| Equation note | `\keyequation{Title}{E = mc^2}[note]` adds a smaller, indented block below the equation. The original two-argument call still works. |
+| Derivation explanation | On each `notederivation` row, `&& \qquad \text{...}` is optional; omit it when no explanation is needed. |
+
+The style file also loads `multicol` and `changepage`, so `multicols` and
+`adjustwidth` are available without separate package imports.
+
 ### Topic divider
 
 Use one divider for each overall topic covered in a lecture. It creates an
@@ -174,8 +187,8 @@ paragraphs and lists, and the box can break across pages.
 
 The second argument is already in display math mode: do not enclose it in `$`.
 For several lines, use `\begin{aligned} ... \end{aligned}` inside that argument.
-An optional third argument in square brackets adds a smaller, indented note
-below the equation:
+The original two-argument call works unchanged. An optional third argument in
+square brackets adds a smaller, indented note below the equation:
 
 ```latex
 \keyequation{Mass-energy equivalence}{E = mc^2}[
