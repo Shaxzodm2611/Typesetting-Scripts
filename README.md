@@ -149,6 +149,23 @@ Its smaller accent heading has less space around it and no divider rule.
 % CMOS device structure notes go here.
 ```
 
+### Note box
+
+Use `\notebox{Title}{Content}` for a general explanation or reminder. It has
+a white background, a teal left rule, and a small teal title. The body accepts
+paragraphs and lists, and the box can break across pages.
+
+```latex
+\notebox{Key idea}{
+  The gate controls the channel between source and drain.
+
+  \begin{itemize}
+    \item Use the title to name the idea.
+    \item Add details or examples in the body.
+  \end{itemize}
+}
+```
+
 ### Key equation
 
 ```latex

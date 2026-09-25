@@ -54,6 +54,12 @@
   colframe=NoteAccent,boxrule=0pt,leftrule=1.5pt,arc=0pt,
   left=12pt,right=12pt,top=8pt,bottom=8pt,
   before skip=9pt,after skip=9pt}}
+\tcbset{noteboxstyle/.style={noteblock,colback=white}}
+\NewDocumentCommand{\notebox}{m +m}{%
+  \begin{tcolorbox}[noteboxstyle]
+    {\sffamily\bfseries\small\color{NoteAccent}#1}\par
+    #2
+  \end{tcolorbox}}
 \NewDocumentCommand{\keyequation}{m m o}{%
   \begin{tcolorbox}[noteblock]
     {\sffamily\bfseries\small\color{NoteAccent}#1}\par
