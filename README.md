@@ -37,7 +37,8 @@ Open [the compiled sample](examples/rc-filter/lecture.pdf), or edit
 [lecture.tex](examples/rc-filter/lecture.tex). It loads the actual local
 [lecturenotes.sty](examples/rc-filter/lecturenotes.sty); the formatting is not
 duplicated in the sample source. The sample intentionally contains demonstration
-content. New lectures start blank with only the course/lecture header.
+content. New lectures start with an automatic contents page and no prefilled
+topics.
 
 ### 1. Install LaTeX
 
@@ -55,7 +56,7 @@ latexmk --version
 
 The package uses `fontenc`, `lmodern`, `geometry`, `amsmath`, `helvet`,
 `newtxtext`, `newtxmath`, `microtype`, `xcolor`, `booktabs`, `tabularx`,
-`fancyhdr`, `tcolorbox`, `circuitikz`, `pgfplots`, `xparse`, `multicol`,
+`fancyhdr`, `tcolorbox`, `circuitikz`, `pgfplots`, `xparse`, `etoolbox`, `multicol`,
 `changepage`, `needspace`, and `listings`. A minimal TeX installation may need
 additional packages, including `newtx` (available in `texlive-fonts-extra` on
 Debian/Ubuntu). No shell escape or external image-conversion program is needed
@@ -98,13 +99,15 @@ Copy `lecturenotes.sty` into a new lecture folder and create `lecture.tex`:
 \usepackage{lecturenotes}
 \lectureheader{ECE342}{2}
 \begin{document}
-\null % Ensures even an empty lecture produces its initial page.
+\tableofcontents
+\clearpage
 \end{document}
 ```
 
 Add your notes before `\end{document}`. Change `a4paper` to `letterpaper` if
-preferred. The header repeats on subsequent pages, and there is no title page
-or prefilled section structure.
+preferred. The contents page comes first, followed by your notes. The header
+repeats on subsequent pages, and there is no title page or prefilled topic
+structure.
 
 ## Reusable blocks
 
@@ -122,6 +125,7 @@ in the local `.sty` file to adjust the palette.
 
 | Feature | Use |
 | --- | --- |
+| Table of contents | New lectures automatically list `\notesection` and `\subnotesection` headings with page numbers. |
 | Subtopics | `\subnotesection{NMOS}` adds a smaller heading under `\notesection{Device Structure}`. |
 | General note | `\notebox{Title}{Content}` creates a breakable white box with a teal left rule. |
 | Equation note | `\keyequation{Title}{E = mc^2}[note]` adds a smaller, indented block below the equation. The original two-argument call still works. |
@@ -129,6 +133,24 @@ in the local `.sty` file to adjust the palette.
 
 The style file also loads `multicol` and `changepage`, so `multicols` and
 `adjustwidth` are available without separate package imports.
+
+### Table of contents
+
+New lectures include `\tableofcontents` followed by `\clearpage` immediately
+after `\begin{document}`. Each `\notesection{Title}` becomes a main entry;
+each `\subnotesection{Title}` becomes an indented entry underneath it. Both
+levels show their page numbers while the headings themselves stay unnumbered.
+Contents entries use compact spacing, with a 3 pt gap before main entries.
+
+LaTeX Workshop's default `latexmk` build updates the contents automatically.
+When compiling directly with `pdflatex`, run it at least twice so it can read
+the headings and page numbers written by the first pass; run it again if the
+contents changes the pagination. An empty lecture has an
+empty contents page; entries appear as you add headings.
+
+For an existing lecture, copy in the updated `lecturenotes.sty` and add
+`\tableofcontents` and `\clearpage` after `\begin{document}`. Rebuild the
+executable to include the updated template in future `notes new` output.
 
 ### Topic divider
 
@@ -458,7 +480,9 @@ review corrections, and platform limitations.
 
 Replace the executable to use the updated formatting in new lectures. For an
 existing editable lecture, copy `examples/rc-filter/lecturenotes.sty` into its
-folder and rebuild in VS Code. Version 0.1.2 uses NewTX text and maths and adds
-required titles to circuit and signal-plot environments; ensure the `newtx` TeX
-package is installed. Existing derivations should use the left-aligned column
-syntax shown above.
+folder and rebuild in VS Code. Version 0.1.5 adds compact automatic contents entries
+for topic and subtopic headings; add `\tableofcontents` and `\clearpage`
+after `\begin{document}` in existing sources. It retains NewTX text and maths,
+and required circuit and signal-plot titles; ensure the
+`newtx` TeX package is installed. Existing derivations should use the
+left-aligned column syntax shown above.

@@ -3,6 +3,9 @@
 \lectureheader{ECE342}{2}
 
 \begin{document}
+\tableofcontents
+\clearpage
+
 % ==================== Topic 1: frequency domain ====================
 \notesection{RC low-pass filter: frequency domain}
 A resistor and capacitor smooth a changing input. Take the output across
@@ -56,10 +59,12 @@ Use $\omega_c=1/RC$ for rad/s and $f_c=1/(2\pi RC)$ for Hz.
 % =================== Topic 3: sampled signals ======================
 \notesection{Sampled signals: definitions and notation}
 
+\subnotesection{Sampling period}
 \notedefinition{Sampling period}{The interval $T_s$ between successive
 samples. The sampling frequency is $f_s=1/T_s$. A sampled input is written
 $x[n]=v_{\mathrm{in}}(nT_s)$, where $n$ is an integer sample index.}
 
+\subnotesection{Notation}
 \begin{notation}
 $T_s$ & Sampling period & $\mathrm{s}$ \\
 $f_s$ & Sampling frequency & $\mathrm{Hz}$ \\

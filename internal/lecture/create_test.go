@@ -28,8 +28,8 @@ func TestNewPortableBlankLecture(t *testing.T) {
 	if !strings.Contains(string(data), `\lectureheader{ECE\_342}{2}`) {
 		t.Fatal(string(data))
 	}
-	if !strings.Contains(string(data), `\null`) || strings.Contains(string(data), `\notesection`) {
-		t.Fatal("not a blank page")
+	if !strings.Contains(string(data), `\tableofcontents`) || !strings.Contains(string(data), `\clearpage`) || strings.Contains(string(data), `\notesection`) || strings.Contains(string(data), `\subnotesection`) {
+		t.Fatal("missing table of contents or unexpected starter headings")
 	}
 	if _, err := New(base, "ECE_342", "2"); err == nil {
 		t.Fatal("overwrote lecture")

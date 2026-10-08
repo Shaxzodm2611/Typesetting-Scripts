@@ -35,6 +35,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-pictures lmodern poppler-utils
+      - name: Verify generated table of contents
+        run: go test -count=1 -run TestTableOfContents ./internal/lecture
       - name: Compile blank template and all-block sample
         shell: bash
         run: |
@@ -55,8 +57,9 @@ jobs:
           sha256sum -c "$RUNNER_TEMP/lecture.sha256"
           cd "$GITHUB_WORKSPACE/examples/rc-filter"
           pdflatex -interaction=nonstopmode -halt-on-error lecture.tex > "$RUNNER_TEMP/sample.stdout"
+          pdflatex -interaction=nonstopmode -halt-on-error lecture.tex >> "$RUNNER_TEMP/sample.stdout"
           if grep -E 'Overfull|Underfull|LaTeX Warning|Package .* Warning' lecture.log; then exit 1; fi
-          test "$(pdfinfo lecture.pdf | awk '/^Pages:/ {print $2}')" = 3
+          test "$(pdfinfo lecture.pdf | awk '/^Pages:/ {print $2}')" = 4
 
   build:
     needs: [test, latex]

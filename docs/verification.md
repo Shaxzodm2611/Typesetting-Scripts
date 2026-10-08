@@ -76,3 +76,31 @@ go build -trimpath -o bin/notes ./cmd/notes
 
 Use a disposable directory for cleanup checks. Native Windows verification is
 provided by the checked-in CI job when that workflow is published and run.
+
+## 2026-10-08: automatic table of contents (v0.1.4)
+
+- Generated lectures start with a contents page. Topic and subtopic commands
+  register unnumbered entries at the section and subsection levels.
+- The native Windows Go suite (`go test -count=1 ./...`), `go vet ./...`, and
+  the Windows amd64 executable build completed successfully with Go 1.27.2.
+- `TestTableOfContents` was also run with verbose output and passed without
+  skipping. It compiles a generated lecture with real pdfLaTeX, checks hierarchy,
+  order, unnumbered titles, mathematics and escaped characters in headings,
+  and page numbers, then verifies renamed/removed headings and changed page
+  numbers in both the `.toc` file and the rendered contents page.
+- The rebuilt CLI generated an empty lecture in a directory containing spaces.
+  It compiled to exactly one A4 page showing the header and empty contents.
+- The updated all-block sample compiled to four pages (contents plus three
+  pages of notes) with no LaTeX warnings or overfull/underfull boxes. All four
+  pages were rendered and visually reviewed.
+- CI now runs the contents integration test after installing TeX, compiles
+  the sample twice, and checks its updated page count. Remote CI has not been
+  run for this change.
+
+### Compact contents spacing (v0.1.5)
+
+- Contents paragraphs use zero paragraph skip; the gap before main entries is
+  reduced from the article default of 1 em to 3 pt. Note-body spacing is scoped
+  separately from this change.
+- The real-TeX contents integration and portable-generation tests pass, and the
+  sample still compiles to four pages without layout warnings.
