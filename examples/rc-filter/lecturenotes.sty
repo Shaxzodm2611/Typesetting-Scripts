@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{lecturenotes}[2026/10/08 v0.1.5 Lecture summary formatting]
+\ProvidesPackage{lecturenotes}[2026/10/10 v0.2.0 Lecture summary formatting]
 \RequirePackage[T1]{fontenc}
 \RequirePackage{lmodern}
 \RequirePackage[margin=22mm,includehead,headheight=24pt,headsep=8mm]{geometry}
@@ -20,6 +20,10 @@
 \RequirePackage{changepage}
 \RequirePackage{needspace}
 \RequirePackage{listings}
+\RequirePackage{graphicx,caption}
+\RequirePackage{hyperref}
+\hypersetup{hidelinks,unicode,linktoc=all,bookmarksopen=true,bookmarksdepth=5}
+\usetikzlibrary{arrows.meta}
 \pgfplotsset{compat=1.18}
 
 \definecolor{NoteAccent}{HTML}{246A70}
@@ -39,8 +43,8 @@
   \fancyhead[L]{\fontsize{12}{14}\selectfont\sffamily\bfseries\color{NoteAccent}\textls[60]{#1}}%
   \fancyhead[R]{\fontsize{11}{13}\selectfont\sffamily\bfseries\color{NoteInk}Lecture #2}}
 
-% Record the two note-heading levels without numbering their printed titles.
-\setcounter{tocdepth}{2}
+% Record all five note-heading levels without numbering their printed titles.
+\setcounter{tocdepth}{5}
 % Keep contents entries compact without changing paragraph spacing in the notes.
 \AddToHook{cmd/tableofcontents/before}{\begingroup\setlength{\parskip}{0pt}}
 \AddToHook{cmd/tableofcontents/after}{\endgroup}
@@ -48,6 +52,7 @@
   \PackageWarning{lecturenotes}{Unable to reduce contents entry spacing}}
 \NewDocumentCommand{\notesection}{m}{%
   \par\addvspace{15pt}\Needspace{5\baselineskip}%
+  \phantomsection
   \addcontentsline{toc}{section}{#1}%
   {\fontsize{14}{17}\selectfont\sffamily\bfseries\color{NoteInk}#1\par}%
   \nobreak\vspace{3pt}%
@@ -55,9 +60,43 @@
   \nobreak\vspace{7pt}\noindent\ignorespaces}
 \NewDocumentCommand{\subnotesection}{m}{%
   \par\addvspace{8pt}\Needspace{3\baselineskip}%
+  \phantomsection
   \addcontentsline{toc}{subsection}{#1}%
   {\fontsize{11}{14}\selectfont\sffamily\bfseries\color{NoteAccent}#1\par}%
   \nobreak\vspace{2pt}\noindent\ignorespaces}
+
+% Lower levels share a compact block layout, with progressively quieter type.
+\newcommand{\note@minorheading}[7]{%
+  \par\addvspace{#1}\Needspace{3\baselineskip}%
+  \phantomsection
+  \addcontentsline{toc}{#2}{#7}%
+  {\fontsize{#3}{#4}\selectfont\sffamily#5\color{#6}#7\par}%
+  \nobreak\vspace{2pt}\noindent\ignorespaces}
+\ExplSyntaxOn
+\NewDocumentCommand{\note@heading}{m m}{
+  \str_case:nnF {#1} {
+    {1}{\notesection{#2}}
+    {2}{\subnotesection{#2}}
+    {3}{\note@minorheading{6pt}{subsubsection}{10}{13}{\bfseries}{NoteInk}{#2}}
+    {4}{\note@minorheading{5pt}{paragraph}{10}{13}{\itshape}{NoteInk}{#2}}
+    {5}{\note@minorheading{4pt}{subparagraph}{9}{12}{\bfseries}{NoteMuted}{#2}}
+  } {
+    \PackageError{lecturenotes}{Heading~level~'#1'~must~be~1--5}
+      {Use~\string\noteheading\{level\}\{Title\}~with~a~level~from~1~to~5.}
+  }
+}
+\ExplSyntaxOff
+\pgfkeys{/noteheading/.is family,/noteheading,bookmark/.initial={}}
+\NewDocumentCommand{\noteheading}{O{} m m}{%
+  \begingroup\pgfkeys{/noteheading,bookmark={},#1}%
+  \edef\note@bookmark{\pgfkeysvalueof{/noteheading/bookmark}}%
+  \ifx\note@bookmark\@empty
+    \note@heading{#2}{#3}%
+  \else
+    \note@heading{#2}{\texorpdfstring{#3}{\note@bookmark}}%
+  \fi
+  \endgroup}
+\NewDocumentCommand{\subsubnotesection}{m}{\noteheading{3}{#1}}
 
 \tcbset{noteblock/.style={enhanced,breakable,colback=NoteTint,
   colframe=NoteAccent,boxrule=0pt,leftrule=1.5pt,arc=0pt,
@@ -93,13 +132,14 @@
     {\bfseries #1}\par
     #2
   \end{tcolorbox}}
-\NewDocumentEnvironment{notederivation}{m +b}{%
+\NewDocumentEnvironment{notederivation}{O{} m +b}{%
   \par\addvspace{9pt}\Needspace{6\baselineskip}\begingroup
-    {\sffamily\bfseries\small\color{NoteMuted}#1}\par\nobreak
+    \pgfkeys{/notederivation,mode=auto,explanation=below,equation-width=0.52\linewidth,gap=6mm,#1}%
+    {\sffamily\bfseries\small\color{NoteMuted}#2}\par\nobreak
     \setlength{\abovedisplayskip}{5pt}%
     \setlength{\belowdisplayskip}{5pt}%
     \setlength{\jot}{5pt}%
-    \begin{equation*}\begin{alignedat}{2}#2\end{alignedat}\end{equation*}
+    \note@derivationbody{#3}%
   \endgroup\par\addvspace{6pt}}{}
 \NewDocumentEnvironment{notetable}{m m +b}{%
   \par\addvspace{7pt}\begingroup
@@ -138,7 +178,7 @@
 \NewDocumentEnvironment{notecircuit}{O{} m +b}{%
   \begin{center}
     {\sffamily\small\bfseries\color{NoteMuted}#2\par}\vspace{3pt}
-    \begin{circuitikz}[color=NoteInk,#1]
+    \begin{circuitikz}[color=NoteInk,note-circuit,#1]
     #3
     \end{circuitikz}
   \end{center}}{}
@@ -156,3 +196,189 @@
     \end{axis}
     \end{tikzpicture}
   \end{center}}{}
+
+% Setup is opt-in: legacy diagrams keep their existing scale and options.
+\tikzset{note-circuit/.style={},
+  note-highlight/.style={yellow!75!orange,opacity=0.35,line width=5pt,
+    line cap=round,line join=round},
+  note-current/.style={red,line width=0.3pt,-{Latex[length=2pt,width=1.4pt]}}}
+\pgfkeys{/notes/.is family,/notes,
+  circuit-preset/.is choice,
+  circuit-preset/none/.code={\tikzset{note-circuit/.style={}}},
+  circuit-preset/compact/.code={\tikzset{note-circuit/.style={american,
+    scale=0.55,transform shape}}\ctikzset{current arrow scale=24}},
+  circuit-preset/standard/.code={\tikzset{note-circuit/.style={american,
+    scale=0.8,transform shape}}\ctikzset{current arrow scale=24}},
+  toc-depth/.code={\note@setdepth{toc}{#1}},
+  bookmark-depth/.code={\note@setdepth{bookmark}{#1}}}
+\NewDocumentCommand{\notesetup}{m}{\pgfkeys{/notes,#1}}
+\ExplSyntaxOn
+\cs_new_protected:Npn \note@setdepth #1#2 {
+  \regex_match:nnTF { \A [0-5] \Z } {#2} {
+    \str_if_eq:nnTF {#1}{toc}
+      {\setcounter{tocdepth}{#2}}
+      {\hypersetup{bookmarksdepth=#2}}
+  } {\PackageError{lecturenotes}{Navigation~depth~must~be~0--5}
+       {Set~toc-depth~or~bookmark-depth~to~an~integer~from~0~to~5.}}
+}
+
+% Every panel is a minipage. The outer wrapper optionally keeps whole rows
+% together; without it, page breaks are allowed between complete rows.
+\int_new:N \l_note_panel_columns_int
+\int_new:N \g_note_panel_index_int
+\int_new:N \l_note_panel_saved_index_int
+\dim_new:N \l_note_panel_gap_dim
+\dim_new:N \l_note_panel_width_dim
+\clist_new:N \l_note_panel_weights_clist
+\fp_new:N \l_note_panel_weight_sum_fp
+\tl_new:N \l_note_panel_align_tl
+\bool_new:N \l_note_panel_keep_bool
+\keys_define:nn {notes/panels} {
+  columns .int_set:N = \l_note_panel_columns_int,
+  widths .clist_set:N = \l_note_panel_weights_clist,
+  gap .dim_set:N = \l_note_panel_gap_dim,
+  align .choice:,
+  align / top .code:n = {\tl_set:Nn \l_note_panel_align_tl {t}},
+  align / center .code:n = {\tl_set:Nn \l_note_panel_align_tl {c}},
+  align / bottom .code:n = {\tl_set:Nn \l_note_panel_align_tl {b}},
+  keep-together .bool_set:N = \l_note_panel_keep_bool
+}
+\NewDocumentEnvironment{notepanels}{O{} +b}{
+  \par\addvspace{7pt}
+  \keys_set:nn {notes/panels}
+    {columns=2,widths={},gap=6mm,align=top,keep-together=true,#1}
+  \int_compare:nNnTF {\l_note_panel_columns_int} = {2} {}
+    {\int_compare:nNnF {\l_note_panel_columns_int} = {3}
+      {\PackageError{lecturenotes}{Panels~require~2~or~3~columns}
+        {Set~columns=2~or~columns=3.}\int_set:Nn \l_note_panel_columns_int {2}}}
+  \dim_compare:nNnT {\l_note_panel_gap_dim} < {0pt}
+    {\PackageError{lecturenotes}{Panel~gap~cannot~be~negative}{Use~a~positive~gap.}}
+  \clist_if_empty:NT \l_note_panel_weights_clist
+    {\int_step_inline:nn {\l_note_panel_columns_int}
+      {\clist_put_right:Nn \l_note_panel_weights_clist {1}}}
+  \int_compare:nNnF {\clist_count:N \l_note_panel_weights_clist} = {\l_note_panel_columns_int}
+    {\PackageError{lecturenotes}{Panel~widths~must~match~the~column~count}
+      {Use~widths={2,1}~for~two~columns,~or~widths={1,1,1}~for~three.}}
+  \fp_zero:N \l_note_panel_weight_sum_fp
+  \clist_map_inline:Nn \l_note_panel_weights_clist {
+    \fp_compare:nNnF {##1} > {0}
+      {\PackageError{lecturenotes}{Panel~weights~must~be~positive}{Use~positive~numeric~weights.}}
+    \fp_add:Nn \l_note_panel_weight_sum_fp {##1}
+  }
+  \int_set_eq:NN \l_note_panel_saved_index_int \g_note_panel_index_int
+  \int_gzero:N \g_note_panel_index_int
+  \bool_if:NTF \l_note_panel_keep_bool
+    {\noindent\begin{minipage}{\linewidth}#2\end{minipage}}
+    {\noindent #2}
+  \int_gset_eq:NN \g_note_panel_index_int \l_note_panel_saved_index_int
+  \par\addvspace{7pt}
+}{}
+\NewDocumentEnvironment{notepanel}{m +b}{
+  \int_compare:nNnF {\l_note_panel_columns_int} > {0}
+    {\PackageError{lecturenotes}{A~notepanel~must~be~inside~notepanels}
+      {Place~the~panel~inside~a~notepanels~environment.}}
+  \unskip
+  \int_compare:nNnTF {\g_note_panel_index_int} = {\l_note_panel_columns_int}
+    {\par\smallskip\noindent\int_gzero:N \g_note_panel_index_int}
+    {\int_compare:nNnT {\g_note_panel_index_int} > {0}{\hspace{\l_note_panel_gap_dim}}}
+  \int_gincr:N \g_note_panel_index_int
+  \dim_set:Nn \l_note_panel_width_dim {\fp_to_dim:n {
+    (\dim_to_fp:n{\linewidth} - (\l_note_panel_columns_int-1)*\dim_to_fp:n{\l_note_panel_gap_dim})
+    *\clist_item:Nn \l_note_panel_weights_clist {\g_note_panel_index_int}
+    /\l_note_panel_weight_sum_fp}}
+  \dim_compare:nNnF {\l_note_panel_width_dim} > {0pt}
+    {\PackageError{lecturenotes}{Panel~gap~leaves~no~room~for~content}{Reduce~the~gap.}}
+  \begin{minipage}[\l_note_panel_align_tl]{\l_note_panel_width_dim}
+    \str_if_eq:VnT \l_note_panel_align_tl {t}{\vspace{0pt}}
+    {\sffamily\small\bfseries\color{NoteMuted}#1\par}\vspace{5pt}
+    #2
+  \end{minipage}
+}{\ignorespacesafterend}
+
+% Inline figures keep the image and caption together. Floating figures use
+% normal LaTeX placement; width and height are upper bounds on the same image.
+\dim_new:N \l_note_figure_width_dim
+\dim_new:N \l_note_figure_height_dim
+\tl_new:N \l_note_figure_placement_tl
+\tl_new:N \l_note_figure_label_tl
+\keys_define:nn {notes/figure} {
+  width .dim_set:N = \l_note_figure_width_dim,
+  maxheight .dim_set:N = \l_note_figure_height_dim,
+  placement .tl_set:N = \l_note_figure_placement_tl,
+  label .tl_set:N = \l_note_figure_label_tl
+}
+\cs_new_protected:Npn \note_figure_content:nn #1#2 {
+  \centering
+  \includegraphics[width=\l_note_figure_width_dim,height=\l_note_figure_height_dim,keepaspectratio]{#1}\par
+  \caption{#2}
+  \tl_if_empty:NF \l_note_figure_label_tl {\exp_args:NV \label \l_note_figure_label_tl}
+}
+\cs_new_protected:Npn \note_figure_begin:n #1 {\begin{figure}[#1]}
+\NewDocumentCommand{\notefigure}{O{} m m}{
+  \par\addvspace{7pt}\begingroup
+  \keys_set:nn {notes/figure}
+    {width=0.85\linewidth,maxheight=65mm,placement=here,label={},#1}
+  \dim_compare:nNnF {\l_note_figure_width_dim} > {0pt}
+    {\PackageError{lecturenotes}{Figure~width~must~be~positive}{Use~a~positive~dimension.}}
+  \dim_compare:nNnF {\l_note_figure_height_dim} > {0pt}
+    {\PackageError{lecturenotes}{Figure~height~must~be~positive}{Use~a~positive~dimension.}}
+  \str_if_eq:VnTF \l_note_figure_placement_tl {here} {
+    \noindent\begin{minipage}{\linewidth}
+      \captionsetup{hypcap=false,type=figure}
+      \note_figure_content:nn {#2}{#3}
+    \end{minipage}
+  } {
+    \str_if_eq:VnT \l_note_figure_placement_tl {float}
+      {\tl_set:Nn \l_note_figure_placement_tl {htbp}}
+    \exp_args:NnV \regex_match:nnTF {\A[htbp!]+\Z} \l_note_figure_placement_tl {} {
+      \PackageError{lecturenotes}{Unknown~figure~placement}
+        {Use~here,~float,~or~standard~LaTeX~placement~letters~such~as~htbp.}
+    }
+    \exp_args:NV \note_figure_begin:n \l_note_figure_placement_tl
+      \note_figure_content:nn {#2}{#3}
+    \end{figure}
+  }
+  \endgroup\par\addvspace{7pt}
+}
+
+\cs_new_protected:Npn \note@derivationbody #1 {
+  \str_if_eq:eeTF {\note@derivationmode}{steps} {#1} {
+    \str_if_eq:eeTF {\note@derivationmode}{legacy}
+      {\begin{equation*}\begin{alignedat}{2}#1\end{alignedat}\end{equation*}}
+      {\tl_if_in:nnTF {#1}{\derivestep} {#1}
+        {\begin{equation*}\begin{alignedat}{2}#1\end{alignedat}\end{equation*}}}
+  }
+}
+\ExplSyntaxOff
+\newlength{\note@equationwidth}
+\newlength{\note@derivationgap}
+\pgfkeys{/notederivation/.is family,/notederivation,
+  mode/.is choice,
+  mode/auto/.code={\def\note@derivationmode{auto}},
+  mode/legacy/.code={\def\note@derivationmode{legacy}},
+  mode/steps/.code={\def\note@derivationmode{steps}},
+  mode=auto,
+  explanation/.is choice,
+  explanations/.code={\pgfkeys{/notederivation/explanation=#1}},
+  explanation/below/.code={\def\note@explanation{below}},
+  explanation/beside/.code={\def\note@explanation{beside}},
+  explanation=below,
+  equation-width/.code={\setlength{\note@equationwidth}{#1}},
+  gap/.code={\setlength{\note@derivationgap}{#1}}}
+\NewDocumentCommand{\derivestep}{m +m}{%
+  \par\addvspace{7pt}\Needspace{5\baselineskip}%
+  \begin{minipage}{\linewidth}
+    \def\note@beside{beside}%
+    \ifx\note@explanation\note@beside
+      \begin{minipage}[t]{\note@equationwidth}\vspace{0pt}%
+        $\displaystyle\begin{aligned}#1\end{aligned}$%
+      \end{minipage}\hspace{\note@derivationgap}%
+      \begin{minipage}[t]{\dimexpr\linewidth-\note@equationwidth-\note@derivationgap\relax}\vspace{0pt}%
+        \small\color{NoteMuted}#2%
+      \end{minipage}%
+    \else
+      {\setlength{\abovedisplayskip}{3pt}\setlength{\belowdisplayskip}{3pt}%
+        \[\begin{aligned}#1\end{aligned}\]}%
+      {\small\color{NoteMuted}#2\par}%
+    \fi
+  \end{minipage}\par}

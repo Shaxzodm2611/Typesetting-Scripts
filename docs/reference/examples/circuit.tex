@@ -1,0 +1,12 @@
+\notesetup{circuit-preset=compact}
+\begin{notecircuit}{Diode-connected NMOS}
+  \node[nmos,arrowmos,xscale=-1] (M) at (0,0) {};
+  \coordinate (bias) at (0,1.2);
+  \draw[note-highlight]
+    (bias)--(M.G |- bias)--(M.G);
+  \draw (M.D)--(bias) node[circ]{}
+    --(M.G |- bias)--(M.G) node[circ]{};
+  \draw (M.S)--++(0,-0.2) node[ground]{};
+  \draw[note-current] (-0.9,1.1)--(-0.9,0.5);
+  \node[left] at (-1.1,0.8) {$I_D$};
+\end{notecircuit}

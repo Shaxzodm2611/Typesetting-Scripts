@@ -35,8 +35,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-pictures lmodern poppler-utils
-      - name: Verify generated table of contents
-        run: go test -count=1 -run TestTableOfContents ./internal/lecture
+      - name: Verify generated contents and new formatting features
+        run: go test -count=1 ./...
       - name: Compile blank template and all-block sample
         shell: bash
         run: |

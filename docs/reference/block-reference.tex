@@ -1,0 +1,499 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{lecturenotes}
+\usepackage{school-notes-extension}
+\geometry{margin=18mm,top=18mm,bottom=18mm,includehead,
+  headheight=24pt,headsep=6mm}
+\hypersetup{pdftitle={Typesetting Scripts - Block Reference},
+  pdfauthor={Typesetting Scripts},pdfsubject={lecturenotes v0.2.0 usage reference}}
+\fancyhf{}
+\fancyhead[L]{\sffamily\small\bfseries\color{NoteAccent}TYPESETTING SCRIPTS}
+\fancyhead[R]{\sffamily\small\color{NoteMuted}Block reference}
+\fancyfoot[L]{\sffamily\scriptsize\color{NoteMuted}lecturenotes v0.2.0}
+\fancyfoot[R]{\sffamily\scriptsize\color{NoteMuted}\thepage}
+\lstdefinestyle{referencecall}{language=[LaTeX]TeX,
+  basicstyle=\fontsize{9}{11}\selectfont\ttfamily\color{NoteInk},
+  keywordstyle=\color{NoteAccent},commentstyle=\color{NoteMuted},
+  backgroundcolor=\color{NoteCode},frame=single,
+  rulecolor=\color{NoteRule},framerule=0.3pt,framesep=7pt,
+  columns=fullflexible,keepspaces=true,showstringspaces=false,
+  breaklines=true,breakatwhitespace=false,numbers=none,
+  aboveskip=5pt,belowskip=8pt,tabsize=2}
+\lstset{style=referencecall}
+\ExplSyntaxOn
+\NewDocumentCommand{\code}{m}{
+  \group_begin:
+  \ttfamily
+  \tl_set:Nx \l_tmpa_tl {\tl_to_str:n {#1}}
+  % Remove the space detokenize adds before a command's argument delimiter.
+  \regex_replace_all:nnN {(\\[A-Za-z@]+)\s+([\{\[])} {\1\2} \l_tmpa_tl
+  \tl_trim_spaces:N \l_tmpa_tl
+  \tl_use:N \l_tmpa_tl
+  \group_end:
+}
+\ExplSyntaxOff
+\newcommand{\tagline}[1]{\par\smallskip
+  {\sffamily\scriptsize\bfseries\color{NoteAccent}#1}\par\nobreak}
+\newcommand{\referencepage}[3]{\clearpage
+  \pdfbookmark[0]{#2}{manual:#1}\phantomsection\label{ref:#1}
+  {\sffamily\fontsize{21}{25}\selectfont\bfseries #2\par}
+  {\sffamily\small\color{NoteMuted}#3\par}\medskip}
+\newenvironment{result}{\tagline{RENDERED RESULT}
+  \begin{tcolorbox}[enhanced,breakable,colback=white,colframe=NoteRule,
+    boxrule=0.4pt,arc=0pt,left=9pt,right=9pt,top=6pt,bottom=6pt,
+    before skip=4pt,after skip=8pt]}{\end{tcolorbox}}
+\newcommand{\callfile}[1]{\tagline{CALL}
+  \lstinputlisting{docs/reference/examples/#1.tex}}
+\newcommand{\resultfile}[1]{\begin{result}
+  \input{docs/reference/examples/#1.tex}\end{result}}
+\newcommand{\example}[1]{\callfile{#1}\resultfile{#1}}
+\newcommand{\indexrow}[3]{\hyperref[ref:#1]{#2} & #3 & \pageref{ref:#1}\\}
+\NewDocumentEnvironment{options}{+b}{\tagline{OPTIONS AND DEFAULTS}
+  \begingroup\small\renewcommand{\arraystretch}{1.2}
+  \begin{tabularx}{\linewidth}{@{}p{54mm}X@{}}
+    #1
+  \end{tabularx}\endgroup\par\smallskip}{}
+\begin{document}
+\pdfbookmark[0]{Find a block}{manual:index}
+{\sffamily\fontsize{27}{31}\selectfont\bfseries Block reference\par}
+{\sffamily\large\color{NoteAccent}Calls, options, and actual output\par}
+\medskip
+Use this while writing a lecture. The gray area is code to copy; the bordered
+area shows the result produced by the current package. Click a topic below or
+open this PDF's bookmarks sidebar to jump to its reference page.
+
+\tagline{FIND THE RIGHT BLOCK}
+\begin{tabularx}{\linewidth}{@{}p{39mm}Xr@{}}
+\textbf{Task} & \textbf{Command or environment} & \textbf{Page}\\\midrule
+\indexrow{headings}{Organize topics}{\code{\noteheading}; heading aliases}
+\indexrow{navigation}{Navigate the PDF}{\code{\notesetup}; contents and bookmarks}
+\indexrow{text}{Explain or define}{\code{\notebox}, \code{\notedefinition}, \code{\assumption}}
+\indexrow{equations}{Highlight a result}{\code{\keyequation}}
+\indexrow{steps}{Explain a derivation}{\code{notederivation}, \code{\derivestep}}
+\indexrow{legacy}{Align compact steps}{Legacy and multiline derivations}
+\indexrow{tables}{List values or symbols}{\code{notetable}, \code{notation}}
+\indexrow{panels}{Place content side by side}{\code{notepanels}, \code{notepanel}}
+\indexrow{figures}{Insert an existing image}{\code{\notefigure}}
+\indexrow{circuits}{Draw a circuit}{\code{notecircuit}; presets and annotations}
+\indexrow{signals}{Plot a signal}{\code{notesignal}}
+\indexrow{code}{Include source code}{\code{notecode}}
+\indexrow{summary}{Summarize a topic}{\code{\notesummary} (School-Notes only)}
+\indexrow{cli}{Check or update lectures}{\code{notes check}, \code{notes update-style}}
+\indexrow{shortcuts}{Type blocks quickly}{VS Code shortcuts and common mistakes}
+\bottomrule
+\end{tabularx}
+
+\tagline{FIRST DOCUMENT}
+Place \code{lecturenotes.sty} beside \code{lecture.tex}. All block examples go
+between \code{\begin{document}} and \code{\end{document}}.
+\begin{lstlisting}
+\documentclass[a4paper,11pt]{article}
+\usepackage{lecturenotes}
+\lectureheader{ELE734}{1}
+\begin{document}
+\tableofcontents
+\clearpage
+\noteheading{1}{First topic}
+Your notes go here.
+\end{document}
+\end{lstlisting}
+\textbf{Reading the syntax.} Braces \code{{...}} hold required arguments;
+brackets \code{[...]} hold optional arguments. An environment needs matching
+\code{\begin} and \code{\end}. In option lists, separate settings with commas
+and brace values that contain commas. Compile twice after changing headings
+or references. Existing lectures need the v0.2.0 style for the new blocks.
+
+\referencepage{headings}{Headings}{\code{\noteheading[options]{level}{title}}}
+Use levels 1 through 5 to express increasingly specific topics. The heading
+itself is unnumbered. Start with level 1 and move down one level at a time.
+\example{headings}
+\begin{options}
+\code{level} & Required integer from 1 to 5. Other levels cause an error.\\
+\code{bookmark={...}} & Optional plain-text sidebar title. The printed heading
+keeps its mathematics; the sidebar gets a readable title.\\
+\end{options}
+\tagline{EQUIVALENT OLDER NAMES}
+\begin{lstlisting}
+\notesection{Title}        % same as \noteheading{1}{Title}
+\subnotesection{Title}     % same as \noteheading{2}{Title}
+\subsubnotesection{Title}  % same as \noteheading{3}{Title}
+\end{lstlisting}
+Use \code{\noteheading{4}} and \code{\noteheading{5}} for deeper headings;
+there is no need to repeat ``sub'' in the command name.
+
+\textbf{Editor shortcuts:} \code{;h1} through \code{;h5}; \code{;sec} and
+\code{;sub} for the older names. \code{;hbm} asks for the bookmark title,
+then the level, then the printed title.
+
+\referencepage{navigation}{Contents and PDF navigation}{\code{\notesetup{toc-depth=...,bookmark-depth=...}}}
+\textbf{Contents} is a page printed inside your lecture PDF.
+\textbf{Bookmarks} are a topic tree in the PDF viewer's sidebar.
+Clicking either kind of entry jumps to the heading. These settings control
+the two lists independently; every heading still appears in the lecture body.
+\tagline{CALL: TWO LEVELS ON PAPER, FIVE IN THE SIDEBAR}
+\begin{lstlisting}
+% Set this before \tableofcontents and before your headings.
+\notesetup{toc-depth=2,bookmark-depth=5}
+\tableofcontents
+\clearpage
+% Now add the five headings shown on the previous page.
+\end{lstlisting}
+\tagline{PRINTED CONTENTS: ONLY LEVELS 1 AND 2}
+\begin{result}
+  \notesetup{toc-depth=2}
+  \tableofcontents
+\end{result}
+\notesetup{toc-depth=5}
+\tagline{SIDEBAR TREE FOR THE SAME FIVE HEADINGS}
+\begin{lstlisting}[language={},basicstyle=\small\ttfamily]
+Current mirrors
+  Cascode mirrors
+    Output resistance ro
+      Dominant term
+        Approximation condition
+\end{lstlisting}
+\begin{options}
+\code{toc-depth=5} & Default. Values 0--5; 0 hides all note-heading entries
+from the printed contents. You still need \code{\tableofcontents} to print it.\\
+\code{bookmark-depth=5} & Default. Values 0--5; 0 hides note-heading entries
+from the viewer's sidebar. It does not remove body headings.\\
+\code{circuit-preset=none} & Another \code{\notesetup} setting. See page
+\pageref{ref:circuits} for \code{compact} and \code{standard}.\\
+\end{options}
+\textbf{When the list looks stale:} compile twice. Open your PDF viewer's
+bookmarks or outline sidebar to see bookmarks. The optional
+heading \code{bookmark} text changes the sidebar title; the printed contents
+keeps the printed heading text. \textbf{Shortcut:} \code{;nav}.
+
+\referencepage{text}{Text, definitions, and assumptions}{Three blocks for three kinds of prose}
+\textbf{General explanation:} \code{\notebox{title}{body}}.
+Use for a physical interpretation, a reminder, or a grouped explanation.
+\example{box}
+\textbf{A term and its meaning:} \code{\notedefinition{term}{body}}.
+The definition label and slim rule distinguish it from a general note.
+\example{definition}
+\textbf{A condition on the model:} \code{\assumption{body}}.
+This stays inline rather than taking the space of another box.
+\example{assumption}
+Bodies accept normal LaTeX prose, inline mathematics such as \code{$\tau=RC$},
+and paragraphs. The boxes can continue onto another page. These three commands
+have no block-specific optional arguments.
+
+\textbf{Shortcut:} \code{;def} inserts a definition. There are currently no
+dedicated block shortcuts for \code{\notebox} or \code{\assumption}.
+
+\referencepage{equations}{Key equations}{\code{\keyequation{title}{math}[explanation]}}
+Use for a result worth finding again. The equation is displayed in a tinted
+box, with an optional prose explanation below it.
+\example{equation}
+\textbf{Argument order matters:} the optional explanation comes
+\emph{after} the title and equation. Omitting it gives the original
+two-argument call. The equation argument is already in math mode: do not
+surround it with \code{$...$}, \code{\[...\]}, or an \code{equation} environment.
+
+\tagline{MORE THAN ONE EQUATION LINE}
+Use \code{aligned} inside the equation argument. Put \code{&} where the
+lines should align, and \code{\\} at each line break.
+\example{equation-multiline}
+\textbf{Numbering:} key equations are unnumbered. For an equation that needs
+a numbered cross-reference, use a normal LaTeX \code{equation} environment
+and \code{\label{eq:unique-name}}.
+
+\textbf{Shortcut:} \code{;keq} inserts the title and equation. Add the final
+\code{[explanation]} yourself when needed.
+
+\referencepage{steps}{Derivations with explanations}{\code{notederivation} containing \code{\derivestep{math}{prose}}}
+Use a step for each equation and the explanation that belongs to it.
+Explanations wrap as ordinary prose. Each step stays together; the full
+derivation can break between steps.
+\example{derivation}
+\tagline{PUT THE EXPLANATION BESIDE THE EQUATION}
+\example{derivation-beside}
+\begin{options}
+\code{mode=auto} & Default. Detects a literal \code{\derivestep} in the body.
+Use \code{mode=steps} when using \code{\input} or to state the layout explicitly.\\
+\code{explanation=below} & Default. Choose \code{beside} for a text column on
+the right. \code{explanations} is an accepted alias.\\
+\code{equation-width} & Default \code{0.52\linewidth}; left-column width in
+\code{beside} mode. Leave room for the explanation and the gap.\\
+\code{gap=6mm} & Default. Space between columns in \code{beside} mode.\\
+\end{options}
+\textbf{Shortcuts:} \code{;drv} for the whole block; \code{;step} for another
+step. The first math argument is already in math mode; the second is prose.
+
+\referencepage{legacy}{Compact and multiline derivations}{The original alignment remains supported}
+\textbf{Compact explanations.} Use the original \code{alignedat} body for
+short annotations that fit on one line. The initial \code{&} starts the
+equation column; \code{&&} starts its annotation column.
+\example{derivation-legacy}
+\code{mode=legacy} states the layout explicitly. Omitting the option also
+selects it when the body has no literal \code{\derivestep}.
+Annotations use \code{\text{...}} and do not wrap like prose. For longer
+explanations, use the step layout on page \pageref{ref:steps}.
+
+\tagline{MULTIPLE MATH LINES IN ONE WRAPPING STEP}
+Inside \code{\derivestep}, \code{&} aligns equal signs and \code{\\}
+starts another math line. Do not add another \code{aligned} wrapper;
+the step already supplies one.
+\example{derivation-multiline}
+\textbf{Loading steps from a separate file:}
+\begin{lstlisting}
+\begin{notederivation}[mode=steps]{Voltage gain}
+  \input{gain-steps.tex} % the file contains \derivestep calls
+\end{notederivation}
+\end{lstlisting}
+\textbf{Shortcut:} \code{;der} inserts the original aligned-column layout.
+Use \code{;drv} for wrapping explanations.
+
+\referencepage{tables}{Tables and notation}{\code{notetable} for custom columns; \code{notation} for symbols}
+\code{\begin{notetable}{column specification}{header cells}} starts a
+full-width table. Use \code{l}, \code{c}, or \code{r} for natural-width columns;
+\code{X} makes a paragraph column that fills the remaining width.
+\example{table}
+Separate cells with \code{&}. End each body row with \code{\\} or
+\code{\tabularnewline}. The header's row ending and the horizontal rules
+are automatic: do not add a trailing \code{\\} to the header argument.
+The number of cells must match the column specification.
+
+\tagline{A SYMBOL LIST WITH FIXED HEADERS}
+\code{notation} supplies three columns: Symbol, Meaning, and Unit.
+The middle column wraps. Write three cells per row.
+\example{notation}
+Tables do not break across pages. Keep long lists in separate tables.
+For a literal ampersand in prose, write \code{\&} so it is not treated as
+a new cell.
+
+\textbf{Shortcut:} \code{;tbl} inserts a custom notes table. There is no
+dedicated \code{notation} shortcut.
+
+\referencepage{panels}{Content side by side}{\code{notepanels} contains two or three \code{notepanel} columns}
+Put a diagram beside its explanation, compare two models, or show three
+stages. Panel titles are required. Widths are relative weights, not lengths.
+\example{panels}
+\tagline{THREE EQUAL COLUMNS}
+\example{panels-three}
+\begin{options}
+\code{columns=2} & Default. Only 2 or 3 is supported. Additional panels
+start another row after this many columns.\\
+\code{widths={}} & Default: equal widths. \code{widths={2,1}} gives the first
+panel twice the usable width. Supply one positive number per column.\\
+\code{gap=6mm} & Default. Gaps are removed before widths are distributed.\\
+\code{align=top} & Default. Also \code{center} or \code{bottom}.\\
+\code{keep-together=true} & Default. Keeps the entire block on one page.
+\code{false} permits breaks between complete rows.\\
+\end{options}
+Each panel is a minipage and cannot split internally. Use inline figures
+(\code{placement=here}) inside it; normal floats cannot go inside a minipage.
+A panel must be inside \code{notepanels}. Leave enough space for the whole row.
+\textbf{Shortcuts:} \code{;pan2}, \code{;pan3}, and \code{;panel}.
+
+\referencepage{figures}{Images with captions}{\code{\notefigure[options]{image file}{caption}}}
+Use for an existing PNG, JPEG, or PDF figure. It fits within both dimension
+limits, preserves its aspect ratio, and adds a numbered caption.
+\example{figure}
+\begin{options}
+\code{width=0.85\linewidth} & Default maximum width. \code{\linewidth}
+adapts to the current panel or text area.\\
+\code{maxheight=65mm} & Default maximum height. The smaller of the two bounds
+determines the final scale; the image is not stretched.\\
+\code{placement=here} & Default. Image and caption stay together, inline at
+the call. Use this inside panels.\\
+\code{placement=float} & Uses normal \code{htbp} floating. Placement letters
+such as \code{t} or \code{htbp!} are also supported; LaTeX chooses the final position.\\
+\code{label={}} & Default: no reference target. Set a unique name such as
+\code{fig:rc-response} and use \code{\ref{fig:rc-response}}.\\
+\end{options}
+The example's long path is for this reference's included asset. In a lecture,
+put the image in \code{figures/} and use \code{{figures/rc-response.pdf}}.
+Paths are relative to the document's build directory. You may set
+\code{\graphicspath{{figures/}}} and use just the file name.
+Both dimensions must be positive. Compile twice to resolve figure numbers.
+
+\textbf{Shortcut:} \code{;fig} asks for the file name, caption, and label
+suffix. It supplies \code{figures/}, \code{fig:}, width \code{0.8\linewidth},
+and inline placement. Replace every field with your actual values.
+
+\referencepage{circuits}{Circuits and annotations}{\code{\begin{notecircuit}[drawing options]{title}}}
+Write ordinary CircuitikZ commands inside the block. Set a preset before the
+diagram to avoid repeating the common scale and symbol options.
+\example{circuit}
+\begin{options}
+\code{circuit-preset=none} & Default. Supplies no drawing options; existing
+per-diagram settings remain in control.\\
+\code{circuit-preset=compact} & American symbols, scale 0.55, transformed
+labels, and compact current arrows. A useful starting point for notes.\\
+\code{circuit-preset=standard} & Same conventions at scale 0.8.\\
+\code{note-highlight} & TikZ style: translucent yellow, rounded, 5pt stroke.
+Draw it before the dark wire so the connection remains clear.\\
+\code{note-current} & TikZ style: thin red current arrow with a small tip.
+Put its label in a separate node with a little space from the arrow.\\
+\end{options}
+\textbf{Orthogonal MOS connection.} \code{(M.G |- bias)} uses the gate's
+horizontal coordinate and the bias node's vertical coordinate. Connecting
+through that point gives horizontal and vertical wires even when the symbol
+is mirrored. It avoids a guessed gate coordinate and an angled wire.
+
+Explicit drawing options override the preset, for example
+\code{\begin{notecircuit}[scale=0.65]{Title}}. The block centers the diagram
+and adds its title; it does not number a figure or create a floating caption.
+Keep wire runs short and give labels space.
+\textbf{Shortcuts:} \code{;cset}, \code{;cir}, \code{;cur}, \code{;mark}.
+
+\referencepage{signals}{Signal and response plots}{\code{\begin{notesignal}[axis options]{title}}}
+Use for a mathematical curve or a set of data points. The block provides
+a centered PGFPlots axis, muted grid, and teal plot strokes.
+\example{signal}
+\tagline{OPTIONS YOU WILL USUALLY CHANGE}
+\begin{options}
+\code{xlabel}, \code{ylabel} & Axis labels. Brace values containing math,
+spaces, or commas, as shown above.\\
+\code{xmin}, \code{xmax} & Visible horizontal range. Use \code{ymin} and
+\code{ymax} for the vertical range.\\
+\code{xtick}, \code{ytick} & Explicit tick lists, for example \code{xtick={0,1,2}}.\\
+\code{width}, \code{height} & Defaults \code{0.94\linewidth} and \code{5cm}.
+The example uses a slightly shorter axis.\\
+\code{domain}, \code{samples} & Options on \code{\addplot} for a formula,
+not required arguments of the block.\\
+\end{options}
+The optional list accepts normal PGFPlots axis settings. Use PGFPlots
+expression syntax inside a formula: \code{1-exp(-x)}, not a LaTeX equation.
+For data, use \code{\addplot coordinates {(0,0) (1,0.5) (2,0.8)};}.
+Add another \code{\addplot} for another curve and \code{\addlegendentry{...}}
+after a plot for a legend entry. End drawing commands with semicolons.
+There is no dedicated \code{notesignal} shortcut.
+
+\referencepage{code}{Source-code blocks}{\code{\begin{notecode}[listings options]}}
+Code is read verbatim: type underscores, braces, and \texttt{\#} normally.
+The block supplies a neutral background, thin frame, syntax colors, and
+automatic line wrapping.
+\example{code-c}
+\tagline{ARM ASSEMBLY}
+\example{code-arm}
+\begin{options}
+\code{language=C} & Default. Choose another language supported by
+\code{listings}, or the bundled \code{ARM} lexer.\\
+\code{numbers=none} & Default. \code{numbers=left} adds line numbers.\\
+\code{firstnumber=1} & Standard listings option; change the starting line
+number when presenting a later part of a program.\\
+\end{options}
+The ARM lexer highlights a small core of instructions and \code{;} comments;
+it is a display helper, not an assembler or validator.
+Place \code{notecode} directly in the document. Verbatim environments do not
+work inside a macro argument such as the body of \code{\notebox}, or inside
+the captured body of \code{notepanels}. Keep the closing
+\code{\end{notecode}} on its own line. There is no dedicated block shortcut.
+
+\referencepage{summary}{School-Notes summary block}{\code{\notesummary{title}{overview}{table rows}} - local extension}
+This command exists in the updated lecture styles in your School-Notes
+directory. It is preserved when updating those styles, but is \textbf{not}
+bundled into the style generated by \code{notes new}.
+\example{summary}
+\tagline{WHAT EACH ARGUMENT DOES}
+\begin{options}
+\code{title} & Required title at the top of the white note box.\\
+\code{overview} & Required prose in that box. Inline math and paragraphs
+work like normal LaTeX.\\
+\code{table rows} & Required two-column rows below the box. Use a short
+label, \code{&}, the description, then \code{\\}.\\
+\end{options}
+The label column is fixed at \code{4em}; the description column fills the
+remaining width and wraps. Keep labels short, such as Model, Limit, or Use.
+There are no automatically inserted table headings and no optional arguments.
+
+\tagline{IF THE COMMAND IS UNDEFINED IN A NEW LECTURE}
+Use \code{\notebox} followed by \code{notetable} for the same general
+structure, or intentionally copy the local definition into that lecture's
+style. The reference loads a separate copy of this extension only to show
+its output; the canonical package remains the source for every other example.
+
+\textbf{Editor note:} \code{;sum} inserts a mathematical summation, not
+\code{\notesummary}. There is no summary-block shortcut at present.
+
+\referencepage{cli}{Checking and updating lectures}{Terminal commands that support the writing workflow}
+\tagline{CHECK A LECTURE, COURSE, OR THE WHOLE NOTES ROOT}
+\begin{lstlisting}[language={}]
+notes check ELE734/lecture-01
+notes check ELE734 --compile
+notes check . --strict
+\end{lstlisting}
+Run commands from your School-Notes root, or supply a path to it. Omitting
+the path checks the current directory. The static checker follows literal
+\code{\input} and \code{\include} files and reports duplicate labels,
+undefined references, missing files, placeholder labels, and unfinished notes.
+\tagline{ILLUSTRATIVE OUTPUT}
+\begin{lstlisting}[language={}]
+ELE734/lecture-01/lecture.tex:42: error [undefined-reference]:
+  reference "fig:gain" has no label
+\end{lstlisting}
+\begin{options}
+\code{--compile} & Runs pdfLaTeX twice without shell escape, in a temporary
+output directory. Reports build errors and layout warnings while preserving
+existing PDFs, logs, and auxiliary files. Each pass has a 45-second timeout.\\
+\code{--strict} & Warnings also produce exit status 1. Normally warnings
+return 0, errors return 1, and invalid command syntax returns 2.\\
+\end{options}
+The static scan does not expand arbitrary TeX macros or know every
+package-generated label. Use the real build to assess those cases.
+
+\tagline{PREVIEW, THEN APPLY A STYLE UPDATE}
+\begin{lstlisting}[language={}]
+notes update-style ELE734 --dry-run
+notes update-style ELE734
+\end{lstlisting}
+This accepts a lecture, course, or notes root; omission means the current
+directory. The preview reports versions, custom edits, and conflicts. Applying
+merges compatible local edits into the current bundled style, including local
+colors and added commands such as \code{\notesummary}.
+
+\textbf{Concrete file change:} \code{lecturenotes.sty} becomes the updated
+style. Its exact previous bytes go into \code{lecturenotes.sty.bak}, then
+\code{.bak.1}, \code{.bak.2}, and so on if earlier backups exist. Your
+\code{lecture.tex} and figures are unchanged. Already-current styles get no
+new backup. Rebuild the lecture afterward to see the updated formatting.
+
+\textbf{Conflicts:} all lectures are checked before any style is replaced.
+Inspect the reported conflict first. \code{--resolve=keep} favors conflicting
+local edits; \code{--resolve=replace} favors the updated definition. Both
+retain compatible additions. Keeping an old definition can retain old behavior.
+Unknown versions and complex or structurally invalid merges need a manual merge.
+
+\referencepage{shortcuts}{Editor shortcuts and quick fixes}{Keep this page open beside VS Code}
+In your School-Notes workspace, type these at the start of a line outside
+math mode. HyperSnips expands the block; use Tab to move through its fields.
+After updating snippets, run \textbf{HyperSnips: Reload Snippets} from the
+Command Palette. These shortcuts belong to the School-Notes workspace.
+\begin{notetable}{lX}{\textbf{Shortcut} & \textbf{Inserts}}
+\code{;h1}--\code{;h5} & Heading at the chosen level.\\
+\code{;sec}, \code{;sub} & Main and second-level heading aliases.\\
+\code{;hbm} & Heading with plain bookmark title; fields: bookmark, level, title.\\
+\code{;nav} & Printed-contents depth and sidebar depth.\\
+\code{;def} & Definition with a term and body.\\
+\code{;keq} & Key equation with title and math.\\
+\code{;der} & Original derivation with short aligned annotations.\\
+\code{;drv}, \code{;step} & Wrapping derivation and an additional step.\\
+\code{;tbl} & Table specification, header, and body row.\\
+\code{;pan2}, \code{;pan3} & Two or three titled panels.\\
+\code{;panel} & Additional panel inside \code{notepanels}.\\
+\code{;fig} & Image, caption, and label; fields: file name, caption, label suffix.\\
+\code{;cset}, \code{;cir} & Circuit preset and circuit block.\\
+\code{;cur}, \code{;mark} & Current arrow and highlighted connection.\\
+\end{notetable}
+\tagline{COMMON MISTAKES}
+\begin{notetable}{>{\raggedright\arraybackslash}p{43mm}X}{\textbf{Symptom} & \textbf{Fix}}
+Undefined new command & Update that lecture's local style to v0.2.0.
+For \code{\notesummary}, see page \pageref{ref:summary}.\\
+An equation gives a math error & Remove the outer \code{$...$} or
+\code{\[...\]} from \code{\keyequation} or \code{\derivestep}.\\
+Extra alignment tab error & Match each table row's number of cells to
+the columns. Escape literal ampersands as \code{\&}.\\
+Figure number is ``??'' & Give the figure a unique label, use exactly the
+same name in \code{\ref}, and compile twice.\\
+A panel or step runs off the page & Shorten or split its content. A panel
+or individual step cannot split internally.\\
+Floating figure fails in a panel & Set \code{placement=here} for that figure.\\
+Derivation loaded by \code{\input} fails & Set \code{mode=steps} on
+\code{notederivation}.\\
+\end{notetable}
+\textbf{Copyable source:} the illustrated block examples live in
+\code{docs/reference/examples/}. The reference includes those same files to
+render the results, so the calls and outputs stay in sync.
+\end{document}

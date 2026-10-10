@@ -1,0 +1,6 @@
+\begin{notecode}[language=C,numbers=left]
+float lowpass_step(float x, float previous_y, float alpha)
+{
+    return previous_y + alpha * (x - previous_y);
+}
+\end{notecode}

@@ -4,6 +4,9 @@ Fast, consistent after-lecture summaries for engineering courses. Edit LaTeX
 in VS Code and reuse a small formatting package for topic headings, note boxes,
 equations, assumptions, tables, definitions, notation, derivations, code,
 circuits, and signal plots.
+For block syntax, options, and actual rendered examples, open the dedicated
+[Block Reference](docs/block-reference.pdf). Its [companion index](docs/block-reference.md)
+links to the copyable example files and rebuild instructions.
 This is a lecture-summary workflow. Problem sets will not be typeset; the aim
 is to keep summarizing lecture material quick and consistent.
 
@@ -57,7 +60,7 @@ latexmk --version
 The package uses `fontenc`, `lmodern`, `geometry`, `amsmath`, `helvet`,
 `newtxtext`, `newtxmath`, `microtype`, `xcolor`, `booktabs`, `tabularx`,
 `fancyhdr`, `tcolorbox`, `circuitikz`, `pgfplots`, `xparse`, `etoolbox`, `multicol`,
-`changepage`, `needspace`, and `listings`. A minimal TeX installation may need
+`changepage`, `needspace`, `listings`, `graphicx`, `caption`, and `hyperref`. A minimal TeX installation may need
 additional packages, including `newtx` (available in `texlive-fonts-extra` on
 Debian/Ubuntu). No shell escape or external image-conversion program is needed
 for this sample.
@@ -125,8 +128,9 @@ in the local `.sty` file to adjust the palette.
 
 | Feature | Use |
 | --- | --- |
-| Table of contents | New lectures automatically list `\notesection` and `\subnotesection` headings with page numbers. |
+| Table of contents | New lectures automatically list all five heading levels with page numbers. |
 | Subtopics | `\subnotesection{NMOS}` adds a smaller heading under `\notesection{Device Structure}`. |
+| Heading levels | `\noteheading{1}{Title}` through `\noteheading{5}{Title}` provide a consistent hierarchy without repeating `sub` in command names. |
 | General note | `\notebox{Title}{Content}` creates a breakable white box with a teal left rule. |
 | Equation note | `\keyequation{Title}{E = mc^2}[note]` adds a smaller, indented block below the equation. The original two-argument call still works. |
 | Derivation explanation | On each `notederivation` row, `&& \qquad \text{...}` is optional; omit it when no explanation is needed. |
@@ -138,8 +142,10 @@ The style file also loads `multicol` and `changepage`, so `multicols` and
 
 New lectures include `\tableofcontents` followed by `\clearpage` immediately
 after `\begin{document}`. Each `\notesection{Title}` becomes a main entry;
-each `\subnotesection{Title}` becomes an indented entry underneath it. Both
-levels show their page numbers while the headings themselves stay unnumbered.
+each `\subnotesection{Title}` becomes an indented entry underneath it.
+`\noteheading{3}{Title}` through `\noteheading{5}{Title}` add increasingly
+indented entries below those. All levels show their page numbers while the
+headings themselves stay unnumbered.
 Contents entries use compact spacing, with a 3 pt gap before main entries.
 
 LaTeX Workshop's default `latexmk` build updates the contents automatically.
@@ -169,6 +175,27 @@ any topic headings until you add them.
 \notesection{Step response}
 % Next topic's notes go here.
 ```
+
+### Heading levels
+
+Use `\noteheading{level}{Title}` for levels 1 through 5. Level 1 is the main
+topic; each subsequent level is nested under the preceding one. Lower levels
+use smaller or quieter type and tighter spacing. Every level starts a separate
+line and reserves space for the following content.
+
+```latex
+\noteheading{1}{Device Structure}
+\noteheading{2}{NMOS}
+\noteheading{3}{Operating regions}
+\noteheading{4}{Saturation}
+\noteheading{5}{Boundary case}
+% Notes go here.
+```
+
+The existing `\notesection{Title}` and `\subnotesection{Title}` commands
+remain available for levels 1 and 2. `\subsubnotesection{Title}` is an alias
+for level 3. Use the numbered form for deeper levels. Levels outside 1 through
+5 produce a package error.
 
 ### Subtopic heading
 
@@ -478,11 +505,23 @@ review corrections, and platform limitations.
 
 ## Updating the formatting
 
-Replace the executable to use the updated formatting in new lectures. For an
-existing editable lecture, copy `examples/rc-filter/lecturenotes.sty` into its
-folder and rebuild in VS Code. Version 0.1.5 adds compact automatic contents entries
-for topic and subtopic headings; add `\tableofcontents` and `\clearpage`
-after `\begin{document}` in existing sources. It retains NewTX text and maths,
-and required circuit and signal-plot titles; ensure the
-`newtx` TeX package is installed. Existing derivations should use the
-left-aligned column syntax shown above.
+Version 0.2.0 adds reusable panels, standard images, wrapping derivation steps,
+circuit presets, a source checker, customization-aware style updates, and
+independent contents/bookmark settings. See [the feature guide](docs/features.md)
+for calls, options, and editor shortcuts. Existing heading, derivation, and
+circuit syntax remains supported.
+
+Install the rebuilt executable to use the new package in new lectures. Update
+existing editable lectures from your notes root:
+
+```text
+notes update-style ELE727 --dry-run
+notes update-style ELE727
+notes check ELE727 --compile
+```
+
+The preview reports versions, retained custom edits, and conflicts without
+writing files. Applying creates a backup for each changed style and preserves
+compatible customizations. Conflicts stop the update before any styles are
+replaced. Rebuild your PDFs in VS Code afterward. An update that only introduces
+new commands can leave the current layout unchanged until those commands are used.

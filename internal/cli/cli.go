@@ -24,14 +24,17 @@ const help = `notes — lecture summaries with LaTeX
 Usage:
   notes new COURSE NUMBER
   notes clean DIRECTORY [--yes]
+  notes check [DIRECTORY] [--compile] [--strict]
+  notes update-style [DIRECTORY] [--dry-run] [--resolve=keep|replace]
   notes --version
 
 new creates blank lecture.tex and the formatting package in COURSE/lecture-NN.
-Build and review lecture.pdf in VS Code. This tool does not compile LaTeX.
+Build and review lecture.pdf in VS Code. check --compile can validate a temporary build.
 clean permanently deletes everything in that lecture folder EXCEPT lecture.pdf,
 including editable source, the formatting package, figures, and build artifacts.
 
-Use notes new --help or notes clean --help for details.
+check finds source issues; update-style previews or updates styles with backups.
+Use notes COMMAND --help for details.
 `
 const newHelp = `Usage: notes new COURSE NUMBER
 Creates COURSE/lecture-NN in the current directory; refuses existing lectures.
@@ -81,6 +84,10 @@ func Run(args []string, cwd string, streams IO, version string) int {
 		}
 		fmt.Fprintf(streams.Out, "Created %s\nOpen lecture.tex in VS Code to edit and build.\n", dir)
 		return 0
+	case "check":
+		return runCheck(args[1:], cwd, streams)
+	case "update-style":
+		return runUpdate(args[1:], cwd, streams)
 	case "clean":
 		if len(args) == 2 && (args[1] == "--help" || args[1] == "-h") {
 			fmt.Fprint(streams.Out, cleanHelp)

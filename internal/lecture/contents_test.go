@@ -33,15 +33,23 @@ func TestTableOfContents(t *testing.T) {
 		t.Fatal(err)
 	}
 	source := strings.Replace(string(raw), `\end{document}`, `
-\notesection{Sampling \& reconstruction}
+\noteheading{1}{Sampling \& reconstruction}
 A sampled waveform.
-\subnotesection{Spectrum $X(f)$}
+\noteheading{2}{Spectrum $X(f)$}
 Repeated frequency spectra.
+\subsubnotesection{Aliasing \& replicas $f_s$}
+The sampling frequency separates replicas.
+\noteheading{4}{Replica overlap}
+Overlapping spectra cause aliasing.
+\noteheading{5}{Boundary case}
+Equality at the Nyquist limit.
 \clearpage
 \notesection{Quantization}
 Discrete amplitude levels.
 \subnotesection{Error bounds}
 The maximum quantization error.
+\noteheading{3}{Rounding error}
+Round to the nearest level.
 \end{document}`, 1)
 	build := func() (string, string) {
 		t.Helper()
@@ -72,8 +80,12 @@ The maximum quantization error.
 	for _, entry := range []string{
 		`{section}{Sampling \& reconstruction}{2}`,
 		`{subsection}{Spectrum $X(f)$}{2}`,
+		`{subsubsection}{Aliasing \& replicas $f_s$}{2}`,
+		`{paragraph}{Replica overlap}{2}`,
+		`{subparagraph}{Boundary case}{2}`,
 		`{section}{Quantization}{3}`,
 		`{subsection}{Error bounds}{3}`,
+		`{subsubsection}{Rounding error}{3}`,
 	} {
 		index := strings.Index(toc, entry)
 		if index < 0 || index <= previous {
@@ -81,10 +93,10 @@ The maximum quantization error.
 		}
 		previous = index
 	}
-	if strings.Count(toc, `\contentsline`) != 4 || strings.Contains(toc, `\numberline`) {
-		t.Fatalf("expected four unnumbered entries:\n%s", toc)
+	if strings.Count(toc, `\contentsline`) != 8 || strings.Contains(toc, `\numberline`) {
+		t.Fatalf("expected eight unnumbered entries:\n%s", toc)
 	}
-	for _, title := range []string{"Contents", "Sampling & reconstruction", "Spectrum", "Quantization", "Error bounds"} {
+	for _, title := range []string{"Contents", "Sampling & reconstruction", "Spectrum", "Aliasing & replicas", "Replica overlap", "Boundary case", "Quantization", "Error bounds", "Rounding error"} {
 		if !strings.Contains(contentsPage, title) {
 			t.Fatalf("contents page does not show %q:\n%s", title, contentsPage)
 		}
@@ -92,15 +104,35 @@ The maximum quantization error.
 
 	source = strings.Replace(source, `\notesection{Quantization}`, `\notesection{Amplitude quantization}`, 1)
 	source = strings.Replace(source, `\subnotesection{Error bounds}`, "", 1)
-	source = strings.Replace(source, `\subnotesection{Spectrum $X(f)$}`, "\\clearpage\n"+`\subnotesection{Spectrum $X(f)$}`, 1)
+	source = strings.Replace(source, `\noteheading{3}{Rounding error}`, "", 1)
+	source = strings.Replace(source, `\subsubnotesection{Aliasing \& replicas $f_s$}`, `\noteheading{3}{Aliasing limits $f_s$}`, 1)
+	source = strings.Replace(source, `\noteheading{2}{Spectrum $X(f)$}`, "\\clearpage\n"+`\noteheading{2}{Spectrum $X(f)$}`, 1)
 	toc, contentsPage = build()
-	if !strings.Contains(toc, `{section}{Amplitude quantization}{4}`) || !strings.Contains(toc, `{subsection}{Spectrum $X(f)$}{3}`) {
+	for _, entry := range []string{
+		`{section}{Amplitude quantization}{4}`,
+		`{subsection}{Spectrum $X(f)$}{3}`,
+		`{subsubsection}{Aliasing limits $f_s$}{3}`,
+		`{paragraph}{Replica overlap}{3}`,
+		`{subparagraph}{Boundary case}{3}`,
+	} {
+		if !strings.Contains(toc, entry) {
+			t.Fatalf("contents did not update titles and page numbers:\n%s", toc)
+		}
+	}
+	if strings.Count(toc, `\contentsline`) != 6 || strings.Contains(toc, `\numberline`) {
+		t.Fatalf("expected six unnumbered entries after edits:\n%s", toc)
+	}
+	for _, removed := range []string{"Error bounds", "Rounding error", "Aliasing \\& replicas", "{section}{Quantization}"} {
+		if strings.Contains(toc, removed) {
+			t.Fatalf("contents retains removed or renamed entries:\n%s", toc)
+		}
+	}
+	if !strings.Contains(contentsPage, "Amplitude quantization") || !strings.Contains(contentsPage, "Aliasing limits") {
 		t.Fatalf("contents did not update titles and page numbers:\n%s", toc)
 	}
-	if strings.Count(toc, `\contentsline`) != 3 || strings.Contains(toc, "Error bounds") || strings.Contains(toc, `{section}{Quantization}`) {
-		t.Fatalf("contents retains removed or renamed entries:\n%s", toc)
-	}
-	if !strings.Contains(contentsPage, "Amplitude quantization") || strings.Contains(contentsPage, "Error bounds") || strings.Contains(contentsPage, "Quantization") {
-		t.Fatalf("rendered contents did not update:\n%s", contentsPage)
+	for _, removed := range []string{"Error bounds", "Rounding error", "Aliasing & replicas", "Quantization"} {
+		if strings.Contains(contentsPage, removed) {
+			t.Fatalf("rendered contents did not update:\n%s", contentsPage)
+		}
 	}
 }

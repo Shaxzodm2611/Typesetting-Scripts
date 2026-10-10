@@ -11,7 +11,8 @@
 - The v0.1.2 sample embeds NewTX text and mathematics. Derivation equations use
   a common left edge with a compact, separately aligned annotation column;
   circuits and signal plots carry concise figure titles.
-- The CLI does not invoke a TeX compiler or create PDFs.
+- `notes new` and `notes clean` do not invoke a TeX compiler. The optional
+  `notes check --compile` feature added in v0.2.0 validates temporary builds.
 - Cleanup preserves only `lecture.pdf`; the original PDF SHA-256 remains
   unchanged in actual compiled-PDF checks. A real terminal cancellation keeps
   all files; a real terminal affirmative answer and noninteractive `--yes`
@@ -104,3 +105,62 @@ provided by the checked-in CI job when that workflow is published and run.
   separately from this change.
 - The real-TeX contents integration and portable-generation tests pass, and the
   sample still compiles to four pages without layout warnings.
+
+## 2026-10-10: five heading levels (v0.1.7)
+
+- `\noteheading{level}{Title}` supports levels 1 through 5. The existing topic
+  and subtopic commands remain supported, and `\subsubnotesection` aliases level 3.
+- The full Linux Go suite and `go vet ./...` pass with Go 1.27.1. The contents
+  integration test exercises all five levels, math and escaped characters in
+  headings, renamed/removed entries, and changed page numbers in the generated
+  contents file and the rendered contents page.
+- The rebuilt Linux executable generates the updated package. A five-level
+  lecture compiles without warnings, and invalid levels `0`, `6`, and `abc`
+  produce a clear package error.
+- The customized School-Notes styles retain their existing formatting and PDF
+  links. A representative document verifies all five bookmark levels; its
+  contents page and note page were rendered and visually inspected.
+- The School-Notes HyperSnips checks pass: 212 snippets parse and 129 expansion,
+  context, overlap, and placeholder checks succeed. The `;h1` through `;h5`
+  snippets compile and appear in the rendered contents page.
+- Native Windows execution and remote CI were not run for this local change.
+
+## 2026-10-10: lecture workflow features (v0.2.0)
+
+- Implemented 2/3-column panels with unequal widths, alignment, and row keeping;
+  inline/floating image helpers; wrapping derivation steps below/beside equations;
+  opt-in circuit presets and annotation styles; independent contents/bookmark
+  depths and optional plain bookmark titles. Original calls remain supported.
+- Implemented `notes check`, including input graphs, graphics paths, standard
+  figure labels, references, TODOs, and optional isolated two-pass compilation.
+  Real compiler integration verifies that existing PDFs, logs, and aux files
+  are not overwritten. Diagnostic tests cover comments/code, line locations,
+  lecture-local labels, missing assets, and recursive inputs.
+- Implemented `notes update-style` with read-only previews, bundled historical
+  bases, customization merging, conflict preflight/choices, stale-preview checks,
+  atomic per-file replacement, exact backups, and CRLF preservation. Tests verify
+  that conflicts stop a course update before any style is changed.
+- The full Linux suite passes with Go 1.27.1, including real pdfLaTeX integration,
+  race-detector checks, and `go vet`. The formatting fixture checks unequal and
+  three-column widths, independent depths, legacy/step derivations, floating and
+  inline images, references, and keeping steps together across multiple pages.
+- Windows lecture and CLI test packages cross-compile. Native Windows execution
+  and remote CI were not run. The LaTeX CI job now exercises the entire suite.
+- Installed `notes 2f900b0+features-v0.2.0` locally. Updated all nine editable
+  School-Notes styles, retained custom summary commands and bookmark settings,
+  and created backups. A repeat preview reports no updates. Checksums confirm
+  that all 71 lecture-source, PDF, and figure files are unchanged.
+- All nine existing lectures compile using the updated styles. The checker
+  reports seven existing duplicate-label errors and ten source warnings; optional
+  compilation additionally reports existing layout/package warnings. Comparing
+  ELE734 Lecture 1 and ELE745 Lecture 2 against their old style backups confirms
+  identical page counts and identical warning sets.
+- HyperSnips parses 223 shortcuts and passes 187 expansion/context/placeholder
+  checks. Generated LaTeX using panels, image helpers, wrapping steps, and circuit
+  presets compiles with the updated lecture style.
+- The seven-page example booklet now renders the production APIs. Every page
+  was inspected; its final LaTeX build has no warnings or overfull/underfull boxes.
+
+For future style releases, retain the previous canonical package in
+`internal/lecture/assets/styles/` before bumping its package version and
+`StyleVersion`. This provides the shared base for merging local customizations.

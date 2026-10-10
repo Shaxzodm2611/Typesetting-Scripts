@@ -1,0 +1,18 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{school-notes-extension}[2026/10/10 Reference-only local extension]
+% Copied from School-Notes/ELE734/lecture-01/lecturenotes.sty.
+% This command is local to School-Notes, not part of the generated package.
+\NewDocumentCommand{\notesummary}{m +m +m}{%
+  \begin{tcolorbox}[noteboxstyle,after skip=0pt]
+    {\sffamily\bfseries\small\color{NoteAccent}#1}\par
+    #2
+  \end{tcolorbox}%
+  \par\addvspace{10pt}%
+  \begingroup
+    \setlength{\parskip}{0pt}%
+    \setlength{\extrarowheight}{4pt}%
+    \noindent\begin{tabularx}{\linewidth}{@{}>{\normalfont\color{NoteMuted}\raggedright\arraybackslash}p{4em}@{\hspace{10pt}}>{\normalfont\color{NoteInk}\arraybackslash}X@{}}
+      #3
+    \end{tabularx}%
+  \endgroup\par\addvspace{7pt}%
+}

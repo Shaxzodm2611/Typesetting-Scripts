@@ -18,6 +18,8 @@
 # Local builds and operating-system files
 /bin/
 /dist/
+/tmp/pdfs/
+/output/pdf/
 *.exe
 .DS_Store
 Thumbs.db
