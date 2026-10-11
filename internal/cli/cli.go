@@ -24,6 +24,7 @@ const help = `notes — lecture summaries with LaTeX
 Usage:
   notes new COURSE NUMBER
   notes clean DIRECTORY [--yes]
+  notes export [DIRECTORY] [--vault PATH] [--term NAME] [--dry-run]
   notes check [DIRECTORY] [--compile] [--strict]
   notes update-style [DIRECTORY] [--dry-run] [--resolve=keep|replace]
   notes --version
@@ -32,6 +33,9 @@ new creates blank lecture.tex and the formatting package in COURSE/lecture-NN.
 Build and review lecture.pdf in VS Code. check --compile can validate a temporary build.
 clean permanently deletes everything in that lecture folder EXCEPT lecture.pdf,
 including editable source, the formatting package, figures, and build artifacts.
+
+export copies a lecture PDF into the matching Obsidian course and removes its
+Markdown counterpart after verifying the copy. Source lecture files are kept.
 
 check finds source issues; update-style previews or updates styles with backups.
 Use notes COMMAND --help for details.
@@ -84,6 +88,8 @@ func Run(args []string, cwd string, streams IO, version string) int {
 		}
 		fmt.Fprintf(streams.Out, "Created %s\nOpen lecture.tex in VS Code to edit and build.\n", dir)
 		return 0
+	case "export":
+		return runExport(args[1:], cwd, streams)
 	case "check":
 		return runCheck(args[1:], cwd, streams)
 	case "update-style":

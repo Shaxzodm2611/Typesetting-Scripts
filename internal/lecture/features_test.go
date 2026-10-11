@@ -30,7 +30,9 @@ func historicalStyle(t *testing.T) string {
 	if err != nil {
 		t.Fatal(err)
 	}
-	return string(data)
+	// Git may check embedded styles out with CRLF on Windows. Build fixtures
+	// from LF first so the CRLF case does not introduce doubled carriage returns.
+	return strings.ReplaceAll(string(data), "\r\n", "\n")
 }
 
 func TestSourceCheckGraphAndLocations(t *testing.T) {
@@ -335,7 +337,8 @@ See Figures~\ref{fig:inline} and~\ref{fig:float}.
 	if err != nil {
 		t.Fatal(err)
 	}
-	pages := strings.Split(string(text), "\f")
+	// Windows pdftotext writes CRLF; page and step boundaries are equivalent.
+	pages := strings.Split(strings.ReplaceAll(string(text), "\r\n", "\n"), "\f")
 	if len(pages) < 4 {
 		t.Fatal("steps did not paginate")
 	}

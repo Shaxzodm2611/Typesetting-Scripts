@@ -23,16 +23,24 @@ notes new ECE342 2
 ```
 
 Open `ECE342/lecture-02/lecture.tex` in VS Code, type your summary, and compile
-with LaTeX Workshop. When you have reviewed the PDF and finished editing:
+with LaTeX Workshop. Check the source and review the built PDF, then preview
+and export it to the matching Obsidian lecture note:
 
 ```text
-notes clean ECE342/lecture-02
+notes check ECE342/lecture-02
+notes export ECE342/lecture-02 --dry-run
+notes export ECE342/lecture-02
 ```
 
-Confirm the prompt to keep only `lecture.pdf`. **This permanently deletes the
-editable source, formatting package, figures, and all other contents in that
-lecture folder.** Stop any automatic build/watch process before finalizing.
-Keep a separate copy beforehand if you want to edit the lecture later.
+Export preserves the editable lecture folder. It replaces the corresponding
+Markdown note only after verifying the PDF copy. Confirm the preview identifies
+the intended note and course/semester. See [export options](#exporting-a-lecture-to-obsidian)
+for explicit vault and semester selection.
+
+Optional `notes clean ECE342/lecture-02` keeps only `lecture.pdf` after
+confirmation. **This permanently deletes the editable source, formatting
+package, figures, and all other contents in that lecture folder.** Stop any
+automatic build/watch process and keep a separate copy if you want to edit later.
 
 ## Try the formatting now
 
@@ -435,9 +443,27 @@ hyphens, and underscores, subject to Windows filename restrictions. The lecture
 number is a positive integer.
 
 Open that folder in VS Code, edit `lecture.tex`, and build with LaTeX Workshop.
-The command itself does not compile the document.
+`notes new` does not compile the document. Check a lecture, course, or notes root:
 
-After reviewing the final PDF:
+```text
+notes check ECE342/lecture-02
+notes check ECE342 --compile
+```
+
+`--compile` validates a temporary build without updating the saved `lecture.pdf`.
+Build and review the PDF beside `lecture.tex` before exporting:
+
+```text
+notes export ECE342/lecture-02 --dry-run
+notes export ECE342/lecture-02
+```
+
+Use `notes update-style DIRECTORY --dry-run` to preview migration of existing
+lecture styles; see [updating the formatting](#updating-the-formatting).
+
+### Optional source cleanup
+
+After reviewing the final PDF, optionally finalize the lecture:
 
 ```text
 notes clean ECE342/lecture-02
@@ -458,6 +484,59 @@ a nonempty PDF with a PDF signature. It cannot determine whether your PDF is
 up to date or visually correct. It refuses an unmarked folder, including
 this hand-authored example. After successful cleanup, the marker is gone
 and a repeated cleanup refuses the already-finalized folder.
+
+### Exporting a lecture to Obsidian
+
+From your school-notes root, preview the destination and then export:
+
+```text
+notes export COE718/lecture-03 --dry-run
+notes export COE718/lecture-03
+```
+
+Inside a lecture directory, `notes export` uses the current directory. The command
+infers the course and lecture number from `COURSE/lecture-NN`, checking the ownership
+marker when present. It also works after `notes clean`, when only `lecture.pdf`
+remains. Export does not compile the PDF; build and review it first.
+
+The vault is discovered from Obsidian's local vault registry and common locations
+under the current user's home directory, including Documents, OneDrive/Documents,
+Sync, and Syncthing. If needed, discovery searches up to six directory levels under
+home, skipping hidden/cache/dependency directories and links. A discovered vault
+must have `.obsidian` and `School` directories. Registered vaults may be on another
+drive or mount point. No username, drive letter, or absolute vault path is embedded
+in the executable, so the same repository works on Windows and Ubuntu.
+
+The destination is the matching `School/<semester>/COURSE/Lectures` folder (course
+and semester matching is case-insensitive). If a course occurs in multiple semesters,
+the unique folder containing the corresponding lecture note/PDF is preferred.
+Ambiguous destinations stop the export; select one explicitly:
+
+```text
+notes export COE718/lecture-03 --vault "path/to/Personal Obsidian Vault" --term "Fall '26"
+```
+
+`--vault` overrides the per-machine `NOTES_OBSIDIAN_VAULT` environment variable,
+which overrides discovery. A vault passed explicitly needs a `School` directory;
+it does not need Obsidian's local configuration synced. `--term` is the semester
+folder name directly under `School`. Use these overrides when a vault lives outside
+the discovery locations or the same course exists in more than one vault.
+
+When a matching Markdown file exists, its title becomes the PDF filename:
+`Lecture 3 - ARM7 Programming.md` becomes `Lecture 3 - ARM7 Programming.pdf`.
+Without a Markdown file or existing matching PDF, the name is `Lecture 3.pdf`.
+Repeat exports retain an existing PDF's title, avoiding duplicates after the
+Markdown has been removed. Matching uses the complete lecture number: lecture 3
+does not match lecture 13 or 30. Multiple matching notes/PDFs or conflicting titles
+are rejected without changing them.
+
+The PDF is copied to a temporary file in the destination, flushed, checked against
+the source, and renamed into place. An existing matching PDF is replaced. Only
+after the copied PDF is verified is the corresponding, unchanged `.md` file removed.
+Copy failures or concurrent changes retain the Markdown; errors after PDF installation
+report the partial result. `--dry-run` resolves and displays all paths without
+copying or deleting anything. The source `lecture.pdf`, `.tex`, style, and figures
+remain in school-notes. Export does not invoke `notes clean`.
 
 ## Project design
 
@@ -509,7 +588,9 @@ Version 0.2.0 adds reusable panels, standard images, wrapping derivation steps,
 circuit presets, a source checker, customization-aware style updates, and
 independent contents/bookmark settings. See [the feature guide](docs/features.md)
 for calls, options, and editor shortcuts. Existing heading, derivation, and
-circuit syntax remains supported.
+circuit syntax remains supported. The local Obsidian `notes export` command
+works alongside `notes check` and `notes update-style`; export does not run
+source cleanup or compile the saved PDF.
 
 Install the rebuilt executable to use the new package in new lectures. Update
 existing editable lectures from your notes root:

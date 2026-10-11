@@ -164,3 +164,21 @@ provided by the checked-in CI job when that workflow is published and run.
 For future style releases, retain the previous canonical package in
 `internal/lecture/assets/styles/` before bumping its package version and
 `StyleVersion`. This provides the shared base for merging local customizations.
+
+## 2026-10-10: integrate local Obsidian export with remote v0.2.0
+
+- Integrated remote commit `c8811d5` with the local `notes export` implementation
+  and its CLI, discovery, file-preservation, and Windows replacement tests.
+  The active package and heading tests use the remote five-level `noteheading`
+  API. Earlier local `notedetail`/`noteparagraph` additions are no longer active.
+- Updated README quick-start and workflow documentation for `new`, `check`,
+  `update-style`, and `export`, with explicit export options and optional cleanup.
+- Native Windows `go test -count=1 ./...`, real LaTeX integration, and `go vet`
+  pass. Normalized line endings in two remote test fixtures/checks so Git CRLF
+  checkout and Windows pdftotext do not produce false failures.
+- Built `notes c8811d5+export-v0.2.0`. A disposable-vault test creates a lecture
+  with the remote style, checks/compiles it, previews export, and verifies that
+  export installs an identical PDF, removes the matching Markdown, and preserves
+  editable sources. The all-block sample compiles to four pages without warnings.
+- No School-Notes files or its in-progress merge were changed by this integration.
+  Remote CI has not been run for the local export integration.
