@@ -150,7 +150,7 @@ func TestStyleUpdatePreservesCustomizationsAndBackups(t *testing.T) {
 				t.Fatal("changed lecture content")
 			}
 			updated, _ := os.ReadFile(filepath.Join(dir, "lecturenotes.sty"))
-			for _, preserved := range []string{"{123456}", `\newcommand{\notesummary}`, `\hypersetup{hidelinks,bookmarksdepth=3,pdfpagemode=UseOutlines}`, `\NewDocumentEnvironment{notepanels}`, "v0.2.0"} {
+			for _, preserved := range []string{"{123456}", `\newcommand{\notesummary}`, `\hypersetup{hidelinks,bookmarksdepth=3,pdfpagemode=UseOutlines}`, `\NewDocumentEnvironment{notepanels}`, "v" + StyleVersion} {
 				if !bytes.Contains(updated, []byte(preserved)) {
 					t.Fatalf("lost %q", preserved)
 				}

@@ -1,8 +1,32 @@
-# Typesetting features, v0.2.0
+# Typesetting features, v0.2.1
 
 All commands below are implemented in the embedded `lecturenotes.sty`. New
 lectures receive it automatically. Update existing lecture styles before using
 the new commands. The original calls remain supported.
+
+## Summary boxes
+
+```latex
+\begin{notesummarybox}[Topic recap]
+  State the main result and its conditions.
+  \[
+    \begin{aligned}
+      \tau &= RC \\
+      f_c &= \frac{1}{2\pi\tau}
+    \end{aligned}
+  \]
+\end{notesummarybox}
+```
+
+The optional title defaults to `Summary`. A solid accent title bar, white
+body, and thin border distinguish this block from key equations and definitions.
+Normal paragraphs, lists, math, and figures work inside it. Use `aligned` for
+multiline equations. The summary stays together on one page; split recaps
+that are longer than a page into separate blocks.
+
+This environment is included by `notes new` and added to older styles by
+`notes update-style`. It coexists with local `\notesummary{...}{...}{...}`
+commands. The School-Notes shortcut is `;sbox`; `;sum` still inserts a sum.
 
 ## Panels
 

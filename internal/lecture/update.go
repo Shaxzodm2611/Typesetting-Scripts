@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-const StyleVersion = "0.2.0"
+const StyleVersion = "0.2.1"
 
 type StyleUpdate struct {
 	Directory, From, To, Status string
@@ -288,7 +288,9 @@ func PreviewStyles(path, resolve string) ([]StyleUpdate, error) {
 		}
 		plan := StyleUpdate{Directory: dir, From: styleVersion(local), To: StyleVersion, Status: "update", before: local, mode: info.Mode().Perm()}
 		normal := strings.ReplaceAll(string(local), "\r\n", "\n")
-		if plan.From != "unknown" && plan.From != StyleVersion {
+		// Only pre-v0.2.0 styles need anchor and hyperref migration. Modern
+		// baselines already contain the correct anchors; preserve them verbatim.
+		if strings.HasPrefix(plan.From, "0.1.") {
 			normal, plan.Migration = migrateLegacy(normal)
 		}
 		base := ""

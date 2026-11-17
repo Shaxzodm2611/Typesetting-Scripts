@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{lecturenotes}[2026/10/10 v0.2.0 Lecture summary formatting]
+\ProvidesPackage{lecturenotes}[2026/11/16 v0.2.1 Lecture summary formatting]
 \RequirePackage[T1]{fontenc}
 \RequirePackage{lmodern}
 \RequirePackage[margin=22mm,includehead,headheight=24pt,headsep=8mm]{geometry}
@@ -103,6 +103,16 @@
   left=12pt,right=12pt,top=8pt,bottom=8pt,
   before skip=9pt,after skip=9pt}}
 \tcbset{noteboxstyle/.style={noteblock,colback=white}}
+% A topic recap stays together and has a full title bar, unlike equation notes.
+% Keep this name distinct from local three-argument \notesummary commands.
+\NewDocumentEnvironment{notesummarybox}{O{Summary}}{%
+  \begin{tcolorbox}[enhanced,colback=white,colframe=NoteAccent,
+    boxrule=0.6pt,arc=2pt,colbacktitle=NoteAccent,coltitle=white,
+    fonttitle=\sffamily\bfseries\small,title={#1},
+    left=12pt,right=12pt,top=9pt,bottom=9pt,
+    toptitle=6pt,bottomtitle=6pt,before skip=14pt,after skip=12pt]
+  \ignorespaces
+}{\end{tcolorbox}}
 \NewDocumentCommand{\notebox}{m +m}{%
   \begin{tcolorbox}[noteboxstyle]
     {\sffamily\bfseries\small\color{NoteAccent}#1}\par

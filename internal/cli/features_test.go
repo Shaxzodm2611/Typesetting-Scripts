@@ -112,7 +112,7 @@ func TestStyleCLIWholeCourseConflictPreflight(t *testing.T) {
 	}
 	for _, path := range []string{first, second} {
 		data, _ := os.ReadFile(path)
-		if !bytes.Contains(data, []byte("v0.2.0")) {
+		if !bytes.Contains(data, []byte("v0.2.1")) {
 			t.Fatal("not updated", path)
 		}
 	}

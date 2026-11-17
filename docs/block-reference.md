@@ -1,7 +1,7 @@
 # Block reference
 
 Open the [illustrated block reference](block-reference.pdf). It covers the full
-`lecturenotes` v0.2.0 API with exact signatures, defaults, copyable calls, rendered
+`lecturenotes` v0.2.1 API with exact signatures, defaults, copyable calls, rendered
 results, and School-Notes editor shortcuts. Use the PDF's first-page index or
 bookmarks to jump directly to a block.
 
@@ -19,14 +19,16 @@ bookmarks to jump directly to a block.
 | Circuits and annotations | 11 | [Orthogonal MOS connection](reference/examples/circuit.tex) |
 | Signal plots | 12 | [Charging response](reference/examples/signal.tex) |
 | Source code | 13 | [C](reference/examples/code-c.tex), [ARM](reference/examples/code-arm.tex) |
-| School-Notes summary extension | 14 | [Summary](reference/examples/summary.tex) |
-| Checking and updating styles | 15 | Commands and options in the reference |
-| VS Code shortcuts and common mistakes | 16 | Lookup table in the reference |
+| Summary boxes | 14 | [Topic recap](reference/examples/summary-box.tex) |
+| Legacy School-Notes summary extension | 15 | [Older summary](reference/examples/summary.tex) |
+| Checking and updating styles | 16 | Commands and options in the reference |
+| VS Code shortcuts and common mistakes | 17 | Lookup table in the reference |
 
 The example files are fragments to paste inside a lecture's document body.
 The figure example uses the included reference image path: in a lecture, copy
-the image into `figures/` and change the path accordingly. `notesummary` is a
-local School-Notes extension, not a command included by `notes new`.
+the image into `figures/` and change the path accordingly. `notesummarybox`
+is included by `notes new`. The older three-argument `\notesummary` remains a
+local School-Notes extension.
 
 To edit or rebuild the PDF, change [its LaTeX source](reference/block-reference.tex)
 or the example files, then run from the repository root:

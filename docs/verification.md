@@ -182,3 +182,26 @@ For future style releases, retain the previous canonical package in
   editable sources. The all-block sample compiles to four pages without warnings.
 - No School-Notes files or its in-progress merge were changed by this integration.
   Remote CI has not been run for the local export integration.
+
+## 2026-11-16: reusable summary boxes (v0.2.1)
+
+- Added `notesummarybox` with a default or custom title, solid accent title bar,
+  white body, and thin border. Recaps accept paragraphs, lists, display math,
+  and figures, and stay together on a page. The name coexists with local
+  three-argument `\notesummary` commands.
+- Preserved the v0.2.0 canonical package as `assets/styles/8c7f90b.sty` before
+  updating `StyleVersion`. Limited legacy anchor migration to v0.1.x styles
+  so v0.2.0 heading anchors survive an update.
+- Native Windows `go test -count=1 ./...` and `go vet ./...` pass with Go 1.25.0.
+  New real-LaTeX checks cover default/custom titles, paragraphs, multiline
+  equations, lists, legacy-command coexistence, and intact page placement.
+  The update regression covers the v0.2.0 baseline, preserved custom commands,
+  heading anchors, and an idempotent second update.
+- Built `notes 0.2.1` and applied its style updater to 18 School-Notes lectures
+  without conflicts, preserving customizations and creating backups. The
+  current lecture was already up to date and compiles without warnings.
+- Added the School-Notes `;sbox` shortcut. All 224 snippets parse and all 195
+  expansion/context/placeholder checks pass; generated LaTeX compiles.
+- Rebuilt and visually inspected the 17-page block reference, including the new
+  summary page, its multiline example, and the shortcut lookup. The reference
+  compiles without layout or LaTeX warnings.

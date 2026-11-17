@@ -2,7 +2,7 @@
 
 Fast, consistent after-lecture summaries for engineering courses. Edit LaTeX
 in VS Code and reuse a small formatting package for topic headings, note boxes,
-equations, assumptions, tables, definitions, notation, derivations, code,
+equations, summary boxes, assumptions, tables, definitions, notation, derivations, code,
 circuits, and signal plots.
 For block syntax, options, and actual rendered examples, open the dedicated
 [Block Reference](docs/block-reference.pdf). Its [companion index](docs/block-reference.md)
@@ -140,6 +140,7 @@ in the local `.sty` file to adjust the palette.
 | Subtopics | `\subnotesection{NMOS}` adds a smaller heading under `\notesection{Device Structure}`. |
 | Heading levels | `\noteheading{1}{Title}` through `\noteheading{5}{Title}` provide a consistent hierarchy without repeating `sub` in command names. |
 | General note | `\notebox{Title}{Content}` creates a breakable white box with a teal left rule. |
+| Summary box | `\begin{notesummarybox}[Title] ... \end{notesummarybox}` creates a white recap with a solid teal title bar. |
 | Equation note | `\keyequation{Title}{E = mc^2}[note]` adds a smaller, indented block below the equation. The original two-argument call still works. |
 | Derivation explanation | On each `notederivation` row, `&& \qquad \text{...}` is optional; omit it when no explanation is needed. |
 
@@ -235,6 +236,34 @@ paragraphs and lists, and the box can break across pages.
   \end{itemize}
 }
 ```
+
+### Summary box
+
+Use `notesummarybox` for a topic recap. It has a solid teal title bar, a white
+body, and a thin border, so it is distinct from equation and definition blocks.
+The optional title defaults to `Summary`.
+
+```latex
+\begin{notesummarybox}[Matched filter recap]
+  The filter maximizes the output SNR at the sampling time.
+  \[
+    \begin{aligned}
+      H(f) &= k S^*(f)e^{-j2\pi fT} \\
+      h(t) &= k s(T-t)
+    \end{aligned}
+  \]
+\end{notesummarybox}
+```
+
+The body accepts paragraphs, lists, equations, and figures. Use a blank line
+for a new paragraph and `aligned` for equation rows; a plain display does not
+provide line breaks for `\\`. The whole summary stays on one page and moves
+to the next page when necessary. Keep it short enough to fit on a page.
+
+New lectures include this block in style v0.2.1. Run `notes update-style` for
+existing lectures. The name leaves local three-argument `\notesummary`
+commands available. In School-Notes, type `;sbox` at the beginning of a line
+to insert the environment; `;sum` remains a mathematical summation.
 
 ### Key equation
 
